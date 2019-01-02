@@ -18,7 +18,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "rollup src/index.js --file dist/simple-renderer.js --format iife"
+    "build": "npm run clean && rollup -c",
+    "clean": "rm -rf ./dist"
   },
   "devDependencies": {
     "eslint": "5.11.1",
