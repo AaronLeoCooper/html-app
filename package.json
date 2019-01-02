@@ -1,0 +1,28 @@
+{
+  "name": "simple-renderer",
+  "version": "1.0.0",
+  "description": "A simple JavaScript & HTML rendering library",
+  "main": "dist/simple-renderer.js",
+  "author": {
+    "name": "Aaron Leo Cooper",
+    "email": "aaronleocooper@gmail.com",
+    "url": "https://webdevdiaries.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "renderer",
+    "ui",
+    "library"
+  ],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup src/index.js --file dist/simple-renderer.js --format iife"
+  },
+  "devDependencies": {
+    "eslint": "5.11.1",
+    "eslint-config-alc": "1.3.0",
+    "rollup": "1.0.0"
+  }
+}
