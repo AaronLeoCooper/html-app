@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Example HTMLApp</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+<div data-htmlapp="main">
+  <form>
+    <div class="formfield">
+      <label>
+        <span class="labeltext">First name</span>
+        <span class="labelfield">
+          <input class="field" data-ha="firstName" id="firstName" name="firstName" placeholder="First name"/>
+          <span data-ha="firstNameError"></span>
+        </span>
+      </label>
+    </div>
+    <div class="formfield">
+      <label>
+        <span class="labeltext">Last name</span>
+        <span class="labelfield">
+          <input class="field" data-ha="lastName" id="lastName" name="lastName" placeholder="Last name"/>
+          <span data-ha="lastNameError"></span>
+        </span>
+      </label>
+    </div>
+    <div class="formfield">
+      <label>
+        <span class="labeltext">About you</span>
+        <span class="labelfield">
+          <textarea class="field" data-ha="aboutYou" id="aboutYou" name="aboutYou" placeholder="About you"></textarea>
+          <span data-ha="aboutYouError"></span>
+        </span>
+      </label>
+    </div>
+    <div class="formfield">
+      <label>
+        <span class="labeltext">Gender</span>
+        <span class="labelfield">
+          <select class="field" data-ha="gender" id="gender" name="gender">
+            <option>Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+          <span data-ha="aboutYouError"></span>
+        </span>
+      </label>
+    </div>
+    <div class="formfield">
+      <span class="labeltext">Preferred OS</span>
+      <span class="labelfield">
+        <label class="sublabel">
+          <span class="sublabeltext">mac OS</span>
+          <input type="radio" data-ha="preferredOs" name="preferredOs" value="macos" />
+        </label>
+        <label class="sublabel">
+          <span class="sublabeltext">Windows</span>
+          <input type="radio" data-ha="preferredOs" name="preferredOs" value="windows" />
+        </label>
+        <label class="sublabel">
+          <span class="sublabeltext">Linux</span>
+          <input type="radio" data-ha="preferredOs" name="preferredOs" value="linux" />
+        </label>
+        <label class="sublabel">
+          <span class="sublabeltext">No preference</span>
+          <input type="radio" data-ha="preferredOs" name="preferredOs" value="none" />
+        </label>
+      </span>
+    </div>
+    <div class="formfield">
+      <label>
+        <span class="labeltext"></span>
+        <span class="labelfield">
+
+        </span>
+      </label>
+    </div>
+  </form>
+</div>
+
+<div data-htmlapp="secondary">
+  Loading secondary...
+</div>
+
+<!-- Sourced from: dist/html-app.browser.js -->
+<script src="../../html-app.browser.js"></script>
+
+<script src="app.js"></script>
+</body>
+</html>
