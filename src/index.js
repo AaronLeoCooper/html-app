@@ -1,3 +1,5 @@
+import { bindEvents } from './events';
+
 const LIB_NAME = 'HTMLApp';
 const ROOT_EL_ATTR = 'data-htmlapp';
 const CHILD_EL_ATTR = 'data-ha';
@@ -55,7 +57,8 @@ class HTMLApp {
 
     this.rootElement = getRootElement(this.opts.appName);
 
-    this.handleLoadApp();
+    window.onload = this.handleLoadApp;
+    window.onunload = this.handleUnloadApp;
   }
 
   getChildNodes() {
@@ -93,7 +96,7 @@ class HTMLApp {
   }
 
   handleBindListeners() {
-    this.rootElement.addEventListener();
+    bindEvents(this.rootElement, this.opts.listeners);
   }
 
   handleUnBindListeners() {

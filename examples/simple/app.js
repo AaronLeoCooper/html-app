@@ -1,6 +1,6 @@
 /* global HTMLApp */
 
-const mainApp = new HTMLApp({
+new HTMLApp({
   appName: 'main',
   debug: true,
   onLoadApp: (childNodes) => {
