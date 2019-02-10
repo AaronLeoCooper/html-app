@@ -1,4 +1,4 @@
-import { bindEvents } from './events';
+import { bindEventListeners } from './events';
 
 const LIB_NAME = 'HTMLApp';
 const ROOT_EL_ATTR = 'data-htmlapp';
@@ -96,7 +96,7 @@ class HTMLApp {
   }
 
   handleBindListeners() {
-    bindEvents(this.rootElement, this.opts.listeners);
+    bindEventListeners(this.rootElement, this.opts.listeners);
   }
 
   handleUnBindListeners() {

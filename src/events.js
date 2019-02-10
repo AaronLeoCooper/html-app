@@ -3,10 +3,12 @@
  * @param rootElement {Element}
  * @param listeners {array}
  */
-export function bindEvents(rootElement, listeners) {
+export function bindEventListeners(rootElement, listeners) {
   listeners.forEach(({ event, handlers }) => {
-    rootElement.addEventListener(event, () => {
-      handlers.forEach((handler) => handler(event));
+    rootElement.addEventListener(event, (e) => {
+      if (e.target.hasAttribute('data-ha')) {
+        handlers.forEach((handler) => handler(e));
+      }
     });
   });
 }

@@ -1,30 +1,69 @@
 # HTMLApp
 
-Fatigued by JavaScript tools? Unsure if you should be in the React, Vue or
-`<insert other library>` camp? Do you just need some JS to enhance your HTML pages?
+Need just a sprinkling of JS to enhance your HTML pages? 🧂
 
-Create a HTML page, stick this JavaScript somewhere and off you go. Apps done **simply**.
+Create a HTML page, stick this JavaScript somewhere and off you go. Simple web apps done *simply*.
 
-```js
-var app = new HTMLApp();
+## Example
+
+Define your view with HTML:
+
+```html
+<body>
+  <div data-htmlapp="main">
+    <input data-ha="userName" />
+    <span data-ha="userNameError"></span>
+  </div>
+  
+  <!-- include your JS files: -->
+  <script src="html-app.browser.min.js"></script>
+  <script src="app.js"></script>
+</body>
 ```
 
-## Benefits
+Define your app logic with JavaScript:
 
-- HTML is your view, JavaScript is your controller/model, the way we used to do web development
-- Listen to many DOM events and react to them efficiently
-- Thin DOM element wrappers to provide just the right amount of helper methods for your app logic
-- No build/transpilation setup needed: stick it in a HTML page and off you go! 🚀
+```js
+// app.js
+new HTMLApp({
+  appName: 'main',
+  listeners: [
+    {
+      el: 'userName',
+      onChange: function(e, el) {
+        if (!e.target.value) {
+          this.getEl('userNameError').setText('This field is required!');
+
+          el.setClass('has-error');
+        } else {
+          this.getEl('userNameError').setText('');
+
+          el.removeClass('has-error');
+        }
+      }
+    }
+  ]
+});
+```
+
+Job done! 🎉
+
+## Features
+
+- HTML is your view, JavaScript is your controller/model (the way we used to do web development!)
+- Listen to as many DOM events as necessary and react to them without browser "chug"
+- Thin DOM element wrappers provide just the right amount of helper methods for your app logic
+- No build/transpilation/configuration setup needed— stick it in a HTML page and off you go! 🚀
 
 ## Installation
 
-The library can downloaded and included in your HTML pages:
+The compressed library JavaScript file can downloaded and included in your HTML pages:
 
 ```html
-<script src="vendor/html-app.browser.js"></script>
+<script src="vendor/html-app.browser.min.js"></script>
 ```
 
-Or installed from NPM and included as an ES6 library import in your JavaScript files:
+Or installed via NPM and included as an ES6 library import in your JavaScript files:
 
 ```bash
 npm i html-app

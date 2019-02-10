@@ -1,3 +1,6 @@
 {
-  "extends": ["alc"]
+  "extends": ["alc"],
+  "env": {
+    "jest": true
+  }
 }
