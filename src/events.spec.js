@@ -1,17 +1,50 @@
 import { getByText, fireEvent } from 'dom-testing-library';
 
-import { bindEventListeners } from './events';
+import { ROOT_EVENT_NODE_NAME } from './constants';
+
+import { getGroupedEvents, bindEventListeners } from './events';
 
 describe('events', () => {
-  describe('bindEventListeners', () => {
-    const clickHandlerA = jest.fn();
-    const clickHandlerB = jest.fn();
-    const clickHandlerC = jest.fn();
+  const noop = () => undefined;
 
+  describe('getGroupedEvents', () => {
+    it('should return event handlers grouped into event type and keyed by node name', () => {
+      const eventHandlers = {
+        node1: {
+          onClick: noop,
+          onKeyDown: noop
+        },
+        node2: {
+          onClick: noop
+        },
+        node3: {
+          onKeyDown: noop,
+          onKeyUp: noop
+        }
+      };
+
+      expect(getGroupedEvents(eventHandlers)).toEqual({
+        click: {
+          node1: noop,
+          node2: noop
+        },
+        keydown: {
+          node1: noop,
+          node3: noop
+        },
+        keyup: {
+          node3: noop
+        }
+      });
+    });
+  });
+
+  describe('bindEventListeners', () => {
     const getDom = () => {
       const div = document.createElement('div');
       div.innerHTML =
-        '<button data-ha="button">HA Button</button>' +
+        '<button data-ha="button1">HA Button 1</button>' +
+        '<button data-ha="button2">HA Button 2</button>' +
         '<button>Not HA Button</button>';
 
       jest.spyOn(div, 'addEventListener');
@@ -19,61 +52,69 @@ describe('events', () => {
       return div;
     };
 
-    const noop = () => undefined;
+    const button1ClickHandler = jest.fn();
+    const button2ClickHandler = jest.fn();
+    const rootClickHandler = jest.fn();
+
+    const eventHandlers = {
+      button1: {
+        onClick: button1ClickHandler,
+        onKeyDown: noop
+      },
+      button2: {
+        onClick: button2ClickHandler
+      },
+      unknownNode: {
+        onClick: noop,
+        onKeyDown: noop
+      },
+      [ROOT_EVENT_NODE_NAME]: {
+        onClick: rootClickHandler
+      }
+    };
 
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
-    it('Should bind multiple common event handlers to one event listener', () => {
+    it('Should bind one event listener for each event type', () => {
       const dom = getDom();
 
-      bindEventListeners(dom, [
-        {
-          event: 'click',
-          handlers: [noop, noop, noop]
-        },
-        {
-          event: 'keyDown',
-          handlers: [noop, noop]
-        }
-      ]);
+      bindEventListeners(dom, eventHandlers);
 
       expect(dom.addEventListener).toHaveBeenCalledTimes(2);
     });
 
-    it('Should trigger multiple callbacks when a data-ha node event is triggered', () => {
+    it('Should trigger one callback when a matching data-ha node event is triggered', () => {
       const dom = getDom();
 
-      bindEventListeners(dom, [
-        {
-          event: 'click',
-          handlers: [clickHandlerA, clickHandlerB, clickHandlerC]
-        }
-      ]);
+      bindEventListeners(dom, eventHandlers);
 
-      fireEvent.click(getByText(dom, 'HA Button'));
+      fireEvent.click(getByText(dom, 'HA Button 1'));
 
-      expect(clickHandlerA).toHaveBeenCalledTimes(1);
-      expect(clickHandlerB).toHaveBeenCalledTimes(1);
-      expect(clickHandlerC).toHaveBeenCalledTimes(1);
+      expect(button1ClickHandler).toHaveBeenCalledTimes(1);
+      expect(button2ClickHandler).toHaveBeenCalledTimes(0);
     });
 
     it('Should not trigger callbacks when a non data-ha node event is triggered', () => {
       const dom = getDom();
 
-      bindEventListeners(dom, [
-        {
-          event: 'click',
-          handlers: [clickHandlerA, clickHandlerB, clickHandlerC]
-        }
-      ]);
+      bindEventListeners(dom, eventHandlers);
 
       fireEvent.click(getByText(dom, 'Not HA Button'));
 
-      expect(clickHandlerA).toHaveBeenCalledTimes(0);
-      expect(clickHandlerB).toHaveBeenCalledTimes(0);
-      expect(clickHandlerC).toHaveBeenCalledTimes(0);
+      expect(button1ClickHandler).toHaveBeenCalledTimes(0);
+      expect(button2ClickHandler).toHaveBeenCalledTimes(0);
+    });
+
+    it('Should trigger root callback when any event is triggered on any node', () => {
+      const dom = getDom();
+
+      bindEventListeners(dom, eventHandlers);
+
+      fireEvent.click(getByText(dom, 'Not HA Button'));
+
+      expect(rootClickHandler).toHaveBeenCalledTimes(1);
     });
   });
 });

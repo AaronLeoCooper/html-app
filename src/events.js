@@ -1,13 +1,68 @@
+import { CHILD_EL_ATTR, ROOT_EVENT_NODE_NAME } from './constants';
+
 /**
- * Binds multiple events by the array of listeners.
- * @param rootElement {Element}
- * @param listeners {array}
+ * Returns an event name with the leading "on" trimmed and then converted to lowercase.
+ * @param event {string}
+ * @returns {string}
  */
-export function bindEventListeners(rootElement, listeners) {
-  listeners.forEach(({ event, handlers }) => {
-    rootElement.addEventListener(event, (e) => {
-      if (e.target.hasAttribute('data-ha')) {
-        handlers.forEach((handler) => handler(e));
+function getNormalisedEventName(event) {
+  return event.toLowerCase().slice(2);
+}
+
+/**
+ * Returns a matching handler for the given event object if one exists, or undefined.
+ * @param e {object}
+ * @param handlers {object}
+ * @returns {Function|undefined}
+ */
+function getMatchingHandler(e, handlers) {
+  const nodeName = e.target.getAttribute(CHILD_EL_ATTR);
+
+  return handlers[nodeName];
+}
+
+/**
+ * Returns a collection of event handlers grouped by event type and keyed by their node name.
+ * @param listeners {object}
+ * @returns {object}
+ */
+export function getGroupedEvents(listeners) {
+  return Object.keys(listeners).reduce((acc, nodeName) => {
+    const nodeEvents = listeners[nodeName];
+
+    return Object.keys(nodeEvents).reduce((accCallbacks, eventType) => {
+      const eventName = getNormalisedEventName(eventType);
+
+      return {
+        ...accCallbacks,
+        [eventName]: Object.assign({}, accCallbacks[eventName], {
+          [nodeName]: nodeEvents[eventType]
+        })
+      };
+    }, acc);
+  }, {});
+}
+
+/**
+ * Binds multiple events by a collection of listeners.
+ * @param rootElement {Element}
+ * @param eventHandlers {object}
+ */
+export function bindEventListeners(rootElement, eventHandlers) {
+  const events = getGroupedEvents(eventHandlers);
+
+  Object.keys(events).forEach((eventName) => {
+    const handlers = events[eventName];
+
+    rootElement.addEventListener(eventName, (e) => {
+      const handler = getMatchingHandler(e, handlers);
+
+      if (handler) {
+        handler(e);
+      }
+
+      if (handlers[ROOT_EVENT_NODE_NAME]) {
+        handlers.root(e);
       }
     });
   });
