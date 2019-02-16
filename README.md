@@ -1,6 +1,6 @@
 # HTMLApp
 
-Need just a sprinkling of JS to enhance your HTML pages? 🧂
+Need just a sprinkling of JS to enhance your HTML pages? ✨
 
 Create a HTML page, stick this JavaScript somewhere and off you go. Simple web apps done *simply*.
 
@@ -10,7 +10,7 @@ Define your view with HTML:
 
 ```html
 <body>
-  <div data-htmlapp="main">
+  <div data-htmlapp>
     <input data-ha="userName" />
     <span data-ha="userNameError"></span>
   </div>
@@ -26,7 +26,6 @@ Define your app logic with JavaScript:
 ```js
 // app.js
 new HTMLApp({
-  appName: 'main',
   listeners: [
     {
       el: 'userName',
