@@ -1,5 +1,7 @@
 # HTMLApp
 
+[![CircleCI](https://circleci.com/gh/AaronLeoCooper/html-app.svg?style=svg&circle-token=80bc42acba0754d42bc16d20afa52df4096c11fb)](https://circleci.com/gh/AaronLeoCooper/html-app)
+
 Need just a sprinkling of JS to enhance your HTML pages? ✨
 
 Create a HTML page, stick this JavaScript somewhere and off you go. Simple web apps done *simply*.
