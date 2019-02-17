@@ -1,5 +1,7 @@
 # HTMLApp
 
+[![CircleCI](https://circleci.com/gh/AaronLeoCooper/html-app/tree/master.svg?style=svg)](https://circleci.com/gh/AaronLeoCooper/html-app/tree/master)
+
 Need just a sprinkling of JS to enhance your HTML pages? ✨
 
 Create a HTML page, stick this JavaScript somewhere and off you go. Simple web apps done *simply*.
