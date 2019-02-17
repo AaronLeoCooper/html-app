@@ -1,8 +1,16 @@
 {
   "name": "html-app",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "A simple JavaScript library for enhancing HTML pages",
   "main": "dist/html-app.js",
+  "bugs": {
+    "email": "aaronleocooper@gmail.com",
+    "url": "https://github.com/AaronLeoCooper/html-app/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AaronLeoCooper/html-app"
+  },
   "author": {
     "name": "Aaron Leo Cooper",
     "email": "aaronleocooper@gmail.com",
@@ -21,11 +29,11 @@
   ],
   "scripts": {
     "start": "npm run clean && rollup -c --watch",
-    "build": "npm run clean && NODE_ENV=production rollup -c",
     "lint": "eslint \"./src\"",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
-    "ci": "npm-run-all lint test build",
+    "build": "npm run clean && NODE_ENV=production rollup -c",
+    "postbuild": "jest ./test/postBuild.spec.js",
     "clean": "rm -rf ./dist"
   },
   "devDependencies": {
