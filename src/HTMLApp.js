@@ -22,8 +22,8 @@ class HTMLApp {
 
     this.rootElement = getRootElement(this.opts.appName);
 
-    window.onload = this.handleLoadApp;
-    window.onunload = this.handleUnloadApp;
+    window.onload = this.handleLoadApp.bind(this);
+    window.onunload = this.handleUnloadApp.bind(this);
   }
 
   getChildNodes() {
@@ -31,7 +31,8 @@ class HTMLApp {
 
     this.debug('childNodes:', childNodes);
 
-    return childNodes.map(node => ({
+    return Array.prototype.map.call(childNodes, node => ({
+      node,
       setHtml: htmlStr => {
         node.innerHTML = htmlStr;
       }
@@ -43,6 +44,8 @@ class HTMLApp {
   }
 
   handleLoadApp() {
+    this.debug('loading app');
+
     if (this.hasListeners()) {
       this.handleBindListeners();
     }
@@ -55,6 +58,8 @@ class HTMLApp {
   }
 
   handleUnloadApp() {
+    this.debug('unloading app');
+
     if (this.hasListeners()) {
       this.handleUnBindListeners();
     }
@@ -71,7 +76,7 @@ class HTMLApp {
   debug(...logMessageParts) {
     if (this.opts.debug) {
       const suffix = this.opts.appName
-        ? `, ${this.opts.appName}`
+        ? ` ${this.opts.appName}`
         : '';
 
       console.info(`${LIB_NAME}${suffix} DEBUG:`, ...logMessageParts);
