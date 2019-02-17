@@ -67,9 +67,6 @@ describe('events', () => {
       unknownNode: {
         onClick: noop,
         onKeyDown: noop
-      },
-      [ROOT_EVENT_NODE_NAME]: {
-        onClick: rootClickHandler
       }
     };
 
@@ -107,10 +104,46 @@ describe('events', () => {
       expect(button2ClickHandler).toHaveBeenCalledTimes(0);
     });
 
-    it('Should trigger root callback when any event is triggered on any node', () => {
+    it('Should trigger root callback when an event is triggered on a data-ha node', () => {
       const dom = getDom();
 
-      bindEventListeners(dom, eventHandlers);
+      bindEventListeners(dom, {
+        [ROOT_EVENT_NODE_NAME]: {
+          onClick: rootClickHandler
+        }
+      });
+
+      fireEvent.click(getByText(dom, 'HA Button 2'));
+
+      expect(rootClickHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should trigger root and matching node callback when an event is triggered on a data-ha node', () => {
+      const dom = getDom();
+
+      bindEventListeners(dom, {
+        button2: {
+          onClick: button2ClickHandler
+        },
+        [ROOT_EVENT_NODE_NAME]: {
+          onClick: rootClickHandler
+        }
+      });
+
+      fireEvent.click(getByText(dom, 'HA Button 2'));
+
+      expect(button2ClickHandler).toHaveBeenCalledTimes(1);
+      expect(rootClickHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('Should trigger root callback when an event is triggered on a non data-ha node', () => {
+      const dom = getDom();
+
+      bindEventListeners(dom, {
+        [ROOT_EVENT_NODE_NAME]: {
+          onClick: rootClickHandler
+        }
+      });
 
       fireEvent.click(getByText(dom, 'Not HA Button'));
 

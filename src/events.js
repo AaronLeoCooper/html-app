@@ -49,10 +49,10 @@ export function getGroupedEvents(listeners) {
  * @param eventHandlers {object}
  */
 export function bindEventListeners(rootElement, eventHandlers) {
-  const events = getGroupedEvents(eventHandlers);
+  const groupedEvents = getGroupedEvents(eventHandlers);
 
-  Object.keys(events).forEach((eventName) => {
-    const handlers = events[eventName];
+  Object.keys(groupedEvents).forEach((eventName) => {
+    const handlers = groupedEvents[eventName];
 
     rootElement.addEventListener(eventName, (e) => {
       const handler = getMatchingHandler(e, handlers);
