@@ -4,6 +4,8 @@ Need just a sprinkling of JS to enhance your HTML pages? ✨
 
 Create a HTML page, stick this JavaScript somewhere and off you go. Simple web apps done *simply*.
 
+Check out the docs at: [html-app.netlify.com](https://html-app.netlify.com).
+
 ## Example
 
 Define your view with HTML:
@@ -26,9 +28,8 @@ Define your app logic with JavaScript:
 ```js
 // app.js
 new HTMLApp({
-  listeners: [
-    {
-      el: 'userName',
+  listeners: {
+    userName: {
       onChange: function(e, el) {
         if (!e.target.value) {
           this.getEl('userNameError').setText('This field is required!');
@@ -41,7 +42,7 @@ new HTMLApp({
         }
       }
     }
-  ]
+  }
 });
 ```
 

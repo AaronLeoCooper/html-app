@@ -62,7 +62,7 @@ export function bindEventListeners(rootElement, eventHandlers) {
       }
 
       if (handlers[ROOT_EVENT_NODE_NAME]) {
-        handlers.root(e);
+        handlers[ROOT_EVENT_NODE_NAME](e);
       }
     });
   });
