@@ -32,3 +32,17 @@ export function getRootElement(rootNamespace = '') {
 
   return rootElement;
 }
+
+/**
+ * Returns an object wrapping the passed DOM element with helper functions.
+ * @param element {Element}
+ * @returns {{setHtml: setHtml, element: Element}}
+ */
+export function getEnhancedElement(element) {
+  return {
+    element,
+    setHtml: htmlStr => {
+      element.innerHTML = htmlStr;
+    }
+  };
+}
