@@ -1,26 +1,103 @@
-import { getRootElement } from './utils';
+import { getDom } from './__mocks__/dom';
+import { CHILD_EL_ATTR, ROOT_EL_ATTR } from './constants';
+
+import {
+  getRootNode,
+  getEnhancedElement,
+  getNormalisedEventName,
+  getChildNode,
+  isCamelcaseEventName
+} from './utils';
 
 describe('utils', () => {
-  describe('getRootElement', () => {
-    const div = document.createElement('div');
-    div.innerHTML = '<div data-htmlapp id="test-htmlapp"></div>';
+  describe('getRootNode', () => {
+    const div = getDom(`<div ${ROOT_EL_ATTR} id="test-htmlapp"></div>`);
 
-    beforeEach(() => {
+    afterEach(() => {
       if (document.querySelector('#test-htmlapp')) {
         document.querySelector('#test-htmlapp').remove();
       }
     });
 
-    it('should return the element with the root attribute', () => {
+    it('Should return the element with the root attribute', () => {
       document.querySelector('body').appendChild(div);
 
-      const rootElement = getRootElement();
+      const rootElement = getRootNode();
 
       expect(rootElement.id).toBe('test-htmlapp');
     });
 
-    it('should throw an app error when there is no root element found', () => {
-      expect(() => getRootElement()).toThrowError();
+    it('Should throw an app error when there is no root element found', () => {
+      expect(() => getRootNode()).toThrowError();
+    });
+  });
+
+  describe('getEnhancedElement', () => {
+    it('Should return the passed element wrapped with helper methods', () => {
+      const div = getDom();
+
+      const result = getEnhancedElement(div);
+
+      expect(result.el).toEqual(div);
+    });
+  });
+
+  describe('getNormalisedEventName', () => {
+    it('Should convert "onEventName" to "eventname"', () => {
+      const result = getNormalisedEventName('onEventName');
+
+      expect(result).toBe('eventname');
+    });
+  });
+
+  describe('getChildNode', () => {
+    it('Should return null when the child element is not within the rootNode', () => {
+      const rootNode = getDom('<div><div></div></div>');
+
+      const result = getChildNode(rootNode, '');
+
+      expect(result).toBeNull();
+    });
+
+    it('Should return null when the child element is not within the rootNode', () => {
+      const rootNode = getDom(
+        `<div><div ${CHILD_EL_ATTR}="test-child" id="test-child-node"></div></div>`
+      );
+
+      const result = getChildNode(rootNode, 'test-child');
+
+      expect(result).toBeInstanceOf(Node);
+      expect(result.id).toBe('test-child-node');
+    });
+  });
+
+  describe('isCamelcaseEventName', () => {
+    it('Should return true when the passed string starts with "on" followed by a capital letter', () => {
+      ['onAbc', 'onBCd', 'onCDE', 'onXyz', 'onYZa', 'onZAB'].forEach((name) => {
+        const result = isCamelcaseEventName(name);
+
+        expect(result).toBe(true);
+      });
+    });
+
+    it('Should return false when the passed string does not start with "on"', () => {
+      const result = isCamelcaseEventName('keyDown');
+
+      expect(result).toBe(false);
+    });
+
+    it('Should return false when the passed starts with "on" followed by a lower case letter', () => {
+      ['onaBc', 'onbcD', 'oncde'].forEach((name) => {
+        const result = isCamelcaseEventName(name);
+
+        expect(result).toBe(false);
+      });
+    });
+
+    it('Should return false when only "on" is passed', () => {
+      const result = isCamelcaseEventName('on');
+
+      expect(result).toBe(false);
     });
   });
 });

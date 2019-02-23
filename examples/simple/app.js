@@ -7,13 +7,12 @@ new HTMLApp({
     console.info('app loaded');
     console.info('childNodes', childNodes);
   },
-  listeners: {
-    firstName: {
-      onChange: (e, app) => {
-        app.setState({
-          formValues: e.target.value
-        });
+  eventHandlers: [
+    {
+      id: 'firstName',
+      onChange: (e) => {
+        console.info('e', e);
       }
     }
-  }
+  ]
 });

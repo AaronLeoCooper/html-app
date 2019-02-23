@@ -30,7 +30,7 @@ Define your app logic with JavaScript:
 ```js
 // app.js
 new HTMLApp({
-  listeners: {
+  eventHandlers: {
     userName: {
       onChange: function(e, el) {
         if (!e.target.value) {
