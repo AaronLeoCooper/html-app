@@ -2,22 +2,41 @@ html,
 body {
   font-family: Helvetica, sans-serif;
   font-size: 16px;
+  margin: 0;
+  padding: 0;
+  background-color: #f9dbbd;
   color: #333;
 }
 
+.form {
+  box-sizing: border-box;
+  margin: 40px auto;
+  max-width: 400px;
+  padding: 20px;
+  background-color: #ffa5ab;
+  border-radius: 10px;
+  box-shadow: 5px 5px 0 0 #a53860;
+}
+
 .formfield {
+  width: 100%;
+}
+
+.formfield:not(:last-child) {
   margin-bottom: 20px;
 }
 
 .labeltext {
   display: inline-block;
-  width: 180px;
+  width: 100%;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
 .labelfield {
   position: relative;
   display: inline-block;
-  width: 300px;
+  width: 100%;
   vertical-align: top;
 }
 
@@ -27,8 +46,9 @@ body {
   color: inherit;
   box-sizing: border-box;
   width: 100%;
-  padding: 5px;
+  padding: 10px;
   border: solid 1px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
 }
 
 select.field {
@@ -54,4 +74,20 @@ select.field {
   display: inline-block;
   margin-right: 20px;
   margin-bottom: 10px;
+}
+
+.button {
+  font-family: inherit;
+  font-size: inherit;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 5px;
+  background-color: #da627d;
+  color: #fff;
+}
+
+.button:hover {
+  background-color: #a53860;
 }
