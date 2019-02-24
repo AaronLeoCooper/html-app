@@ -1,5 +1,14 @@
 /* eslint-disable no-empty-function */
 
+export const documentEvents = {
+  onClick: function documentOnClick() {}
+};
+
+export const rootEvents = {
+  onClick: function rootOnClick() {},
+  onChange: function rootOnChange() {}
+};
+
 export const node1Events = {
   onClick: function node1OnClick() {},
   onKeyDown: function node1OnKeyDown() {}
@@ -15,6 +24,15 @@ export const node3Events = {
 };
 
 export const dummyEventHandlers = [
+  {
+    document: true,
+    onClick: documentEvents.onClick
+  },
+  {
+    root: true,
+    onClick: rootEvents.onClick,
+    onChange: rootEvents.onChange
+  },
   {
     id: 'node1',
     onClick: node1Events.onClick,

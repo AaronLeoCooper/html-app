@@ -10,49 +10,36 @@ const formState = {
 
 const getChangeHandler = (name) => (e) => formState[name] = e.target.value;
 
+function onLoadApp(childNodes) {
+  Object.keys(formState).forEach((fieldName) => {
+    const field = childNodes.find(({ id }) => id === fieldName);
+
+    if (!field.el.type || field.el.type !== 'radio') {
+      field.el.value = formState[fieldName];
+    }
+  });
+
+  childNodes
+    .filter(({ id }) => id === 'preferredOs')
+    .forEach(({ el }) => {
+      if (el.value === formState.preferredOs) {
+        el.checked = true;
+      }
+    });
+}
+
 new HTMLApp({
   appName: 'main',
   debug: true,
-  onLoadApp: (childNodes) => {
-    console.info('childNodes', childNodes);
-
-    Object.keys(formState).forEach((fieldName) => {
-      const field = childNodes.find(({ id }) => id === fieldName);
-
-      if (!field.el.type || field.el.type !== 'radio') {
-        field.el.value = formState[fieldName];
-      }
-    });
-
-    childNodes
-      .filter(({ id }) => id === 'preferredOs')
-      .forEach(({ el }) => {
-        if (el.value === formState.preferredOs) {
-          el.checked = true;
-        }
-      });
-  },
+  onLoadApp,
   eventHandlers: [
-    {
-      id: 'firstName',
-      onChange: getChangeHandler('firstName')
-    },
-    {
-      id: 'lastName',
-      onChange: getChangeHandler('lastName')
-    },
-    {
-      id: 'aboutYou',
-      onChange: getChangeHandler('aboutYou')
-    },
-    {
-      id: 'gender',
-      onChange: getChangeHandler('gender')
-    },
-    {
-      id: 'preferredOs',
-      onChange: getChangeHandler('preferredOs')
-    },
+    { root: true, onChange: () => {} },
+    { document: true, onChange: () => {} },
+    { id: 'firstName', onChange: getChangeHandler('firstName') },
+    { id: 'lastName', onChange: getChangeHandler('lastName') },
+    { id: 'aboutYou', onChange: getChangeHandler('aboutYou') },
+    { id: 'gender', onChange: getChangeHandler('gender') },
+    { id: 'preferredOs', onChange: getChangeHandler('preferredOs') },
     {
       id: 'submitButton',
       onClick: (e) => {
