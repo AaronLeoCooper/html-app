@@ -4,7 +4,6 @@ import { CHILD_EL_ATTR, LIB_NAME, ROOT_EL_ATTR } from './constants';
 import {
   logDebug,
   getRootNode,
-  getEnhancedElement,
   getNormalisedEventName,
   getChildNode,
   isCamelcaseEventName
@@ -38,11 +37,9 @@ describe('utils', () => {
       logDebug(app, 'abc', 123);
 
       expect(console.info).toHaveBeenCalledTimes(1);
-      expect(console.info).toHaveBeenCalledWith(
-        `[DEBUG ${LIB_NAME}]:`,
-        'abc',
-        123
-      );
+      expect(console.info.mock.calls[0][0]).toBe(`%c[DEBUG ${LIB_NAME}]:`);
+      expect(console.info.mock.calls[0][2]).toBe('abc');
+      expect(console.info.mock.calls[0][3]).toBe(123);
     });
 
     it('Should log a prefixed message with the appName to the console when opts.debug is true', () => {
@@ -55,11 +52,9 @@ describe('utils', () => {
       logDebug(app, 'abc', 123);
 
       expect(console.info).toHaveBeenCalledTimes(1);
-      expect(console.info).toHaveBeenCalledWith(
-        `[DEBUG ${LIB_NAME} testApp]:`,
-        'abc',
-        123
-      );
+      expect(console.info.mock.calls[0][0]).toBe(`%c[DEBUG ${LIB_NAME} testApp]:`);
+      expect(console.info.mock.calls[0][2]).toBe('abc');
+      expect(console.info.mock.calls[0][3]).toBe(123);
     });
   });
 
@@ -82,16 +77,6 @@ describe('utils', () => {
 
     it('Should throw an app error when there is no root element found', () => {
       expect(() => getRootNode()).toThrowError();
-    });
-  });
-
-  describe('getEnhancedElement', () => {
-    it('Should return the passed element wrapped with helper methods', () => {
-      const div = getDom();
-
-      const result = getEnhancedElement(div);
-
-      expect(result.el).toEqual(div);
     });
   });
 

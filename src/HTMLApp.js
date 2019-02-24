@@ -1,6 +1,7 @@
 import { CHILD_EL_ATTR } from './constants';
-import { logDebug, getEnhancedElement, getRootNode } from './utils';
+import { logDebug, getRootNode } from './utils';
 import { bindChildEventHandlers } from './events';
+import { getEnhancedElement } from './elements';
 
 /**
  * Options object used when the library is instantiated.
@@ -58,7 +59,7 @@ class HTMLApp {
    * Returns true if the app currently has any provided eventHandlers.
    * @returns {boolean}
    */
-  hasChildListeners() {
+  hasChildEventHandlers() {
     return this.opts.eventHandlers.length > 0;
   }
 
@@ -90,7 +91,7 @@ class HTMLApp {
    * Binds all provided eventHandlers to root element event eventHandlers.
    */
   handleBindAllListeners() {
-    if (this.hasChildListeners()) {
+    if (this.hasChildEventHandlers()) {
       bindChildEventHandlers(this.rootNode, this.opts.eventHandlers);
     }
   }
