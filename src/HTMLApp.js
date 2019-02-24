@@ -1,81 +1,119 @@
-import { CHILD_EL_ATTR, LIB_NAME } from './constants';
-import { getRootElement } from './utils';
-import { bindEventListeners } from './events';
+import { CHILD_EL_ATTR } from './constants';
+import { logDebug, getRootNode } from './utils';
+import { bindChildEventHandlers } from './events';
+import { getEnhancedElement } from './elements';
 
-const DEFAULT_OPTS = {
+/**
+ * Options object used when the library is instantiated.
+ * @typedef LibOptions
+ * @property appName {string|undefined}
+ * @property eventHandlers {{eventType: string, handlers: Object[]}[]}
+ * @property onLoadApp {Function|undefined}
+ * @property onUnloadApp {Function|undefined}
+ * @property debug {boolean}
+ */
+
+/**
+ * @type {LibOptions}
+ */
+const DEFAULT_OPTIONS = {
   appName: undefined,
-  listeners: undefined,
+  eventHandlers: [],
   onLoadApp: undefined,
   onUnloadApp: undefined,
   debug: false
 };
 
 /**
- * Core HTMLApp class.
+ * Core library class.
  */
 class HTMLApp {
-  constructor(userOpts = {}) {
+  /**
+   * @param options {LibOptions}
+   */
+  constructor(options = {}) {
     this.opts = {
-      ...DEFAULT_OPTS,
-      ...userOpts
+      ...DEFAULT_OPTIONS,
+      ...options
     };
 
-    this.rootElement = getRootElement(this.opts.appName);
+    this.rootNode = getRootNode(this.opts.appName);
 
-    window.onload = this.handleLoadApp;
-    window.onunload = this.handleUnloadApp;
+    window.addEventListener('load', this.handleLoadApp.bind(this));
+    window.addEventListener('beforeunload', this.handleUnloadApp.bind(this));
   }
 
-  getChildNodes() {
-    const childNodes = this.rootElement.querySelectorAll(`[${CHILD_EL_ATTR}]`);
+  /**
+   * Returns all elements within the root element that have the app child attribute.
+   * @returns {Object[]}
+   */
+  getAllChildNodes() {
+    const childNodes = this.rootNode.querySelectorAll(`[${CHILD_EL_ATTR}]`);
 
-    this.debug('childNodes:', childNodes);
+    this.withApp(logDebug, 'childNodes:', childNodes);
 
-    return childNodes.map(node => ({
-      setHtml: htmlStr => {
-        node.innerHTML = htmlStr;
-      }
-    }));
+    return Array.prototype.map.call(childNodes, getEnhancedElement);
   }
 
-  hasListeners() {
-    return Object.keys(this.opts.listeners).length > 0;
+  /**
+   * Returns true if the app currently has any provided eventHandlers.
+   * @returns {boolean}
+   */
+  hasChildEventHandlers() {
+    return this.opts.eventHandlers.length > 0;
   }
 
+  /**
+   * Side-effects triggered when the app initialises.
+   */
   handleLoadApp() {
-    if (this.hasListeners()) {
-      this.handleBindListeners();
-    }
+    const { onLoadApp } = this.opts;
 
-    if (this.opts.onLoadApp) {
-      const childNodes = this.getChildNodes();
+    this.withApp(logDebug, 'loading app');
 
-      this.opts.onLoadApp(childNodes);
+    this.handleBindAllListeners();
+
+    if (onLoadApp) {
+      const childNodes = this.getAllChildNodes();
+
+      onLoadApp(childNodes);
     }
   }
 
+  /**
+   * Side-effects triggered when the app is unloaded.
+   */
   handleUnloadApp() {
-    if (this.hasListeners()) {
-      this.handleUnBindListeners();
+    this.withApp(logDebug, 'unloading app');
+  }
+
+  /**
+   * Binds all provided eventHandlers to root element event eventHandlers.
+   */
+  handleBindAllListeners() {
+    if (this.hasChildEventHandlers()) {
+      bindChildEventHandlers(this.rootNode, this.opts.eventHandlers);
     }
   }
 
-  handleBindListeners() {
-    bindEventListeners(this.rootElement, this.opts.listeners);
-  }
+  /**
+   * Unbinds all provided eventHandlers from root element event eventHandlers.
+   */
+  // handleUnBindAllListeners() {}
 
-  handleUnBindListeners() {
-    this.rootElement.removeEventListener();
-  }
-
-  debug(...logMessageParts) {
-    if (this.opts.debug) {
-      const suffix = this.opts.appName
-        ? `, ${this.opts.appName}`
-        : '';
-
-      console.info(`${LIB_NAME}${suffix} DEBUG:`, ...logMessageParts);
-    }
+  /**
+   * A wrapper method that will call the passed function with the current app instance
+   * (`this`) as the first argument and spread all other arguments afterwards.
+   * Usage:
+   *   this.withApp(myFunc, 'abc', 123);
+   * Result:
+   *   myFunc(this, 'abc', 123);
+   * @param {Function} callback - The function to be invoked with the app instance provided
+   * @param {*} args - Any arguments to be passed from the second argument onwards
+   * @return {*}
+   */
+  withApp(callback, ...args) {
+    return callback(this, ...args);
   }
 }
 

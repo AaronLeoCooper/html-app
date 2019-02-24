@@ -7,8 +7,8 @@
 </head>
 <body>
 <div data-htmlapp="main">
-  <form>
-    <div class="formfield">
+  <form class="form">
+    <div class="formfield" data-ha="firstNameField">
       <label>
         <span class="labeltext">First name</span>
         <span class="labelfield">
@@ -17,7 +17,7 @@
         </span>
       </label>
     </div>
-    <div class="formfield">
+    <div class="formfield" data-ha="lastNameField">
       <label>
         <span class="labeltext">Last name</span>
         <span class="labelfield">
@@ -26,7 +26,7 @@
         </span>
       </label>
     </div>
-    <div class="formfield">
+    <div class="formfield" data-ha="aboutYouField">
       <label>
         <span class="labeltext">About you</span>
         <span class="labelfield">
@@ -35,12 +35,12 @@
         </span>
       </label>
     </div>
-    <div class="formfield">
+    <div class="formfield" data-ha="genderField">
       <label>
         <span class="labeltext">Gender</span>
         <span class="labelfield">
           <select class="field" data-ha="gender" id="gender" name="gender">
-            <option>Gender</option>
+            <option value="">Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
@@ -48,7 +48,7 @@
         </span>
       </label>
     </div>
-    <div class="formfield">
+    <div class="formfield" data-ha="preferredOs">
       <span class="labeltext">Preferred OS</span>
       <span class="labelfield">
         <label class="sublabel">
@@ -70,18 +70,9 @@
       </span>
     </div>
     <div class="formfield">
-      <label>
-        <span class="labeltext"></span>
-        <span class="labelfield">
-
-        </span>
-      </label>
+      <button class="button" data-ha="submitButton">Submit</button>
     </div>
   </form>
-</div>
-
-<div data-htmlapp="secondary">
-  Loading secondary...
 </div>
 
 <!-- Sourced from: dist/html-app.browser.js -->

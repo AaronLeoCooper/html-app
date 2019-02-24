@@ -1,69 +1,99 @@
-import { CHILD_EL_ATTR, ROOT_EVENT_NODE_NAME } from './constants';
+import { CHILD_EL_ATTR } from './constants';
+import { getNormalisedEventName, getChildNode, isCamelcaseEventName } from './utils';
 
 /**
- * Returns an event name with the leading "on" trimmed and then converted to lowercase.
- * @param event {string}
- * @returns {string}
+ * Returns an array of matching handler objects for the given event, if any.
+ * @param rootNode {Element}
+ * @param e {Event}
+ * @param handlers {{id: string, callback: Function}[]}
+ * @returns {{id: string, callback: Function}[]}
  */
-function getNormalisedEventName(event) {
-  return event.toLowerCase().slice(2);
-}
+export function getMatchingHandlers(rootNode, e, handlers) {
+  const targetNode = e.target;
+  const targetNodeName = targetNode.getAttribute(CHILD_EL_ATTR);
 
-/**
- * Returns a matching handler for the given event object if one exists, or undefined.
- * @param e {object}
- * @param handlers {object}
- * @returns {Function|undefined}
- */
-function getMatchingHandler(e, handlers) {
-  const nodeName = e.target.getAttribute(CHILD_EL_ATTR);
+  return handlers.filter(({ id, ignoreChildren }) => {
+    if (targetNodeName === id) {
+      return true;
+    } else if (!ignoreChildren) {
 
-  return handlers[nodeName];
-}
+      const node = getChildNode(rootNode, id);
 
-/**
- * Returns a collection of event handlers grouped by event type and keyed by their node name.
- * @param listeners {object}
- * @returns {object}
- */
-export function getGroupedEvents(listeners) {
-  return Object.keys(listeners).reduce((acc, nodeName) => {
-    const nodeEvents = listeners[nodeName];
-
-    return Object.keys(nodeEvents).reduce((accCallbacks, eventType) => {
-      const eventName = getNormalisedEventName(eventType);
-
-      return {
-        ...accCallbacks,
-        [eventName]: Object.assign({}, accCallbacks[eventName], {
-          [nodeName]: nodeEvents[eventType]
-        })
-      };
-    }, acc);
-  }, {});
-}
-
-/**
- * Binds multiple events by a collection of listeners.
- * @param rootElement {Element}
- * @param eventHandlers {object}
- */
-export function bindEventListeners(rootElement, eventHandlers) {
-  const events = getGroupedEvents(eventHandlers);
-
-  Object.keys(events).forEach((eventName) => {
-    const handlers = events[eventName];
-
-    rootElement.addEventListener(eventName, (e) => {
-      const handler = getMatchingHandler(e, handlers);
-
-      if (handler) {
-        handler(e);
+      if (node) {
+        return node.contains(targetNode);
       }
+    }
 
-      if (handlers[ROOT_EVENT_NODE_NAME]) {
-        handlers[ROOT_EVENT_NODE_NAME](e);
-      }
+    return false;
+  });
+}
+
+/**
+ * Returns an array of event handler objects grouped by event type.
+ * @param eventHandlers {{id: string}[]}
+ * @returns {{eventType: string, handlers: Object[]}[]}
+ */
+export function getGroupedHandlers(eventHandlers) {
+  return eventHandlers.reduce((accFinalEvents, eventHandler) => {
+    const newHandler = Object.keys(eventHandler)
+      .filter((optionKey) => !isCamelcaseEventName(optionKey))
+      .reduce((accHandler, optionKey) => ({
+        ...accHandler,
+        [optionKey]: eventHandler[optionKey]
+      }), {});
+
+    const newEvents = Object.keys(eventHandler)
+      .filter(isCamelcaseEventName)
+      .reduce((accEvents, eventKey) => {
+        const callbackNewHandler = {
+          ...newHandler,
+          callback: eventHandler[eventKey]
+        };
+
+        const eventType = getNormalisedEventName(eventKey);
+
+        const existingEventHandler = accEvents
+          .find((existingEvent) => existingEvent.eventType === eventType);
+
+        if (existingEventHandler) {
+          return accEvents.map((accEvent) => {
+            if (accEvent.eventType === eventType) {
+              return {
+                eventType,
+                handlers: [...existingEventHandler.handlers, callbackNewHandler]
+              };
+            }
+
+            return accEvent;
+          });
+        }
+
+        return [
+          ...accEvents,
+          {
+            eventType,
+            handlers: [callbackNewHandler]
+          }
+        ];
+      }, accFinalEvents);
+
+    return newEvents;
+  }, []);
+}
+
+/**
+ * Binds multiple child event handlers to their required eventHandlers based on their event types.
+ * @param rootNode {Element}
+ * @param eventHandlers {{id: string}[]}
+ */
+export function bindChildEventHandlers(rootNode, eventHandlers) {
+  const groupedEvents = getGroupedHandlers(eventHandlers);
+
+  groupedEvents.forEach(({ eventType, handlers }) => {
+    rootNode.addEventListener(eventType, (e) => {
+      getMatchingHandlers(rootNode, e, handlers).forEach(({ callback }) => {
+        callback(e);
+      });
     });
   });
 }
