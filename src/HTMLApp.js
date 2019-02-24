@@ -1,7 +1,20 @@
-import { CHILD_EL_ATTR, LIB_NAME } from './constants';
-import { getEnhancedElement, getRootNode } from './utils';
+import { CHILD_EL_ATTR } from './constants';
+import { logDebug, getEnhancedElement, getRootNode } from './utils';
 import { bindChildEventHandlers } from './events';
 
+/**
+ * Options object used when the library is instantiated.
+ * @typedef LibOptions
+ * @property appName {string|undefined}
+ * @property eventHandlers {{eventType: string, handlers: Object[]}[]}
+ * @property onLoadApp {Function|undefined}
+ * @property onUnloadApp {Function|undefined}
+ * @property debug {boolean}
+ */
+
+/**
+ * @type {LibOptions}
+ */
 const DEFAULT_OPTIONS = {
   appName: undefined,
   eventHandlers: [],
@@ -11,9 +24,12 @@ const DEFAULT_OPTIONS = {
 };
 
 /**
- * Core HTMLApp class.
+ * Core library class.
  */
 class HTMLApp {
+  /**
+   * @param options {LibOptions}
+   */
   constructor(options = {}) {
     this.opts = {
       ...DEFAULT_OPTIONS,
@@ -22,8 +38,8 @@ class HTMLApp {
 
     this.rootNode = getRootNode(this.opts.appName);
 
-    window.onload = this.handleLoadApp.bind(this);
-    window.onunload = this.handleUnloadApp.bind(this);
+    window.addEventListener('load', this.handleLoadApp.bind(this));
+    window.addEventListener('beforeunload', this.handleUnloadApp.bind(this));
   }
 
   /**
@@ -33,7 +49,7 @@ class HTMLApp {
   getAllChildNodes() {
     const childNodes = this.rootNode.querySelectorAll(`[${CHILD_EL_ATTR}]`);
 
-    this.debug('childNodes:', childNodes);
+    this.withApp(logDebug, 'childNodes:', childNodes);
 
     return Array.prototype.map.call(childNodes, getEnhancedElement);
   }
@@ -52,7 +68,7 @@ class HTMLApp {
   handleLoadApp() {
     const { onLoadApp } = this.opts;
 
-    this.debug('loading app');
+    this.withApp(logDebug, 'loading app');
 
     this.handleBindAllListeners();
 
@@ -67,7 +83,7 @@ class HTMLApp {
    * Side-effects triggered when the app is unloaded.
    */
   handleUnloadApp() {
-    this.debug('unloading app');
+    this.withApp(logDebug, 'unloading app');
   }
 
   /**
@@ -82,17 +98,21 @@ class HTMLApp {
   /**
    * Unbinds all provided eventHandlers from root element event eventHandlers.
    */
-  // handleUnBindAllListeners() {
-  // }
+  // handleUnBindAllListeners() {}
 
-  debug(...logMessageParts) {
-    if (this.opts.debug) {
-      const suffix = this.opts.appName
-        ? ` ${this.opts.appName}`
-        : '';
-
-      console.info(`${LIB_NAME}${suffix} DEBUG:`, ...logMessageParts);
-    }
+  /**
+   * A wrapper method that will call the passed function with the current app instance
+   * (`this`) as the first argument and spread all other arguments afterwards.
+   * Usage:
+   *   this.withApp(myFunc, 'abc', 123);
+   * Result:
+   *   myFunc(this, 'abc', 123);
+   * @param {Function} callback - The function to be invoked with the app instance provided
+   * @param {*} args - Any arguments to be passed from the second argument onwards
+   * @return {*}
+   */
+  withApp(callback, ...args) {
+    return callback(this, ...args);
   }
 }
 

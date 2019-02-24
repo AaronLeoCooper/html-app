@@ -1,6 +1,21 @@
 import { CHILD_EL_ATTR, LIB_NAME, ROOT_EL_ATTR } from './constants';
 
 /**
+ * Log an arbitrary message to the console if opts.debug is `true`.
+ * @param app {{opts: LibOptions}}
+ * @param logMessageParts {*}
+ */
+export function logDebug(app, ...logMessageParts) {
+  if (app.opts.debug) {
+    const suffix = app.opts.appName
+      ? ` ${app.opts.appName}`
+      : '';
+
+    console.info(`[DEBUG ${LIB_NAME}${suffix}]:`, ...logMessageParts);
+  }
+}
+
+/**
  * Returns an Error instance with a message prefixed by the lib name. Expects one or many
  * string parameters to be joined together in the error message by spaces.
  * @param errorMessageParts

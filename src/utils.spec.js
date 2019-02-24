@@ -1,7 +1,8 @@
 import { getDom } from './__mocks__/dom';
-import { CHILD_EL_ATTR, ROOT_EL_ATTR } from './constants';
+import { CHILD_EL_ATTR, LIB_NAME, ROOT_EL_ATTR } from './constants';
 
 import {
+  logDebug,
   getRootNode,
   getEnhancedElement,
   getNormalisedEventName,
@@ -10,6 +11,58 @@ import {
 } from './utils';
 
 describe('utils', () => {
+  describe('logDebug', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('Should not log a message to the console when opts.debug is false', () => {
+      jest.spyOn(console, 'info');
+
+      const app = {
+        opts: { debug: false }
+      };
+
+      logDebug(app, 'abc', 123);
+
+      expect(console.info).toHaveBeenCalledTimes(0);
+    });
+
+    it('Should log a prefixed message to the console when opts.debug is true', () => {
+      jest.spyOn(console, 'info');
+
+      const app = {
+        opts: { debug: true }
+      };
+
+      logDebug(app, 'abc', 123);
+
+      expect(console.info).toHaveBeenCalledTimes(1);
+      expect(console.info).toHaveBeenCalledWith(
+        `[DEBUG ${LIB_NAME}]:`,
+        'abc',
+        123
+      );
+    });
+
+    it('Should log a prefixed message with the appName to the console when opts.debug is true', () => {
+      jest.spyOn(console, 'info');
+
+      const app = {
+        opts: { debug: true, appName: 'testApp' }
+      };
+
+      logDebug(app, 'abc', 123);
+
+      expect(console.info).toHaveBeenCalledTimes(1);
+      expect(console.info).toHaveBeenCalledWith(
+        `[DEBUG ${LIB_NAME} testApp]:`,
+        'abc',
+        123
+      );
+    });
+  });
+
   describe('getRootNode', () => {
     const div = getDom(`<div ${ROOT_EL_ATTR} id="test-htmlapp"></div>`);
 

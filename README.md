@@ -30,21 +30,22 @@ Define your app logic with JavaScript:
 ```js
 // app.js
 new HTMLApp({
-  eventHandlers: {
-    userName: {
+  eventHandlers: [
+    {
+      id: 'userName',
       onChange: function(e, el) {
         if (!e.target.value) {
           this.getEl('userNameError').setText('This field is required!');
-
+  
           el.setClass('has-error');
         } else {
           this.getEl('userNameError').setText('');
-
+  
           el.removeClass('has-error');
         }
       }
     }
-  }
+  ]
 });
 ```
 
