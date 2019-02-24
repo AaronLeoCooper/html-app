@@ -5,27 +5,32 @@ const formState = {
   lastName: '',
   aboutYou: '',
   gender: '',
-  preferredOs: ''
+  preferredOs: 'none'
 };
 
-const getChangeHandler = (name) => (e) => {
-  formState[name] = e.target.value;
-
-  console.info('new formState:', formState);
-};
+const getChangeHandler = (name) => (e) => formState[name] = e.target.value;
 
 new HTMLApp({
   appName: 'main',
   debug: true,
   onLoadApp: (childNodes) => {
-    console.info('app loaded');
     console.info('childNodes', childNodes);
 
     Object.keys(formState).forEach((fieldName) => {
       const field = childNodes.find(({ id }) => id === fieldName);
 
-      field.el.value = formState[fieldName];
+      if (!field.el.type || field.el.type !== 'radio') {
+        field.el.value = formState[fieldName];
+      }
     });
+
+    childNodes
+      .filter(({ id }) => id === 'preferredOs')
+      .forEach(({ el }) => {
+        if (el.value === formState.preferredOs) {
+          el.checked = true;
+        }
+      });
   },
   eventHandlers: [
     {
@@ -51,7 +56,17 @@ new HTMLApp({
     {
       id: 'submitButton',
       onClick: (e) => {
-        console.log('submit clicked', e);
+        e.preventDefault();
+
+        Object.keys(formState).forEach((key) => {
+          const fieldWrapper = document.querySelector(`[data-ha="${key}Field"]`);
+
+          if (!formState[key]) {
+            fieldWrapper.classList.add('required');
+          } else {
+            fieldWrapper.classList.remove('required');
+          }
+        });
       }
     }
   ]

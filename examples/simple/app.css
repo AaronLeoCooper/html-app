@@ -27,10 +27,20 @@ body {
 }
 
 .labeltext {
+  position: relative;
   display: inline-block;
   width: 100%;
   margin-bottom: 10px;
   font-weight: bold;
+}
+
+.required .labeltext:after {
+  content: 'Required';
+  color: #a53860;
+  position: absolute;
+  right: 0;
+  font-weight: normal;
+  font-style: italic;
 }
 
 .labelfield {
