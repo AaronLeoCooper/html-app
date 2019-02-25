@@ -28,33 +28,30 @@ function onLoadApp(childNodes) {
     });
 }
 
+function onSubmit(e) {
+  e.preventDefault();
+
+  Object.keys(formState).forEach((key) => {
+    const fieldWrapper = document.querySelector(`[data-ha="${key}Field"]`);
+
+    if (!formState[key]) {
+      fieldWrapper.classList.add('required');
+    } else {
+      fieldWrapper.classList.remove('required');
+    }
+  });
+}
+
 new HTMLApp({
   appName: 'main',
   debug: true,
   onLoadApp,
   eventHandlers: [
-    { root: true, onChange: () => {} },
-    { document: true, onChange: () => {} },
+    { root: true, onSubmit },
     { id: 'firstName', onChange: getChangeHandler('firstName') },
     { id: 'lastName', onChange: getChangeHandler('lastName') },
     { id: 'aboutYou', onChange: getChangeHandler('aboutYou') },
     { id: 'gender', onChange: getChangeHandler('gender') },
-    { id: 'preferredOs', onChange: getChangeHandler('preferredOs') },
-    {
-      id: 'submitButton',
-      onClick: (e) => {
-        e.preventDefault();
-
-        Object.keys(formState).forEach((key) => {
-          const fieldWrapper = document.querySelector(`[data-ha="${key}Field"]`);
-
-          if (!formState[key]) {
-            fieldWrapper.classList.add('required');
-          } else {
-            fieldWrapper.classList.remove('required');
-          }
-        });
-      }
-    }
+    { id: 'preferredOs', onChange: getChangeHandler('preferredOs') }
   ]
 });
