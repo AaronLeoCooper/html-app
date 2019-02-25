@@ -1,5 +1,7 @@
 # HTMLApp
 
+[![CircleCI](https://circleci.com/gh/AaronLeoCooper/html-app.svg?style=svg&circle-token=80bc42acba0754d42bc16d20afa52df4096c11fb)](https://circleci.com/gh/AaronLeoCooper/html-app)
+
 Need just a sprinkling of JS to enhance your HTML pages? ✨
 
 Create a HTML page, stick this JavaScript somewhere and off you go. Simple web apps done *simply*.
@@ -28,21 +30,22 @@ Define your app logic with JavaScript:
 ```js
 // app.js
 new HTMLApp({
-  listeners: {
-    userName: {
+  eventHandlers: [
+    {
+      id: 'userName',
       onChange: function(e, el) {
         if (!e.target.value) {
           this.getEl('userNameError').setText('This field is required!');
-
+  
           el.setClass('has-error');
         } else {
           this.getEl('userNameError').setText('');
-
+  
           el.removeClass('has-error');
         }
       }
     }
-  }
+  ]
 });
 ```
 
