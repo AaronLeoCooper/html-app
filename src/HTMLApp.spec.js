@@ -1,7 +1,7 @@
 import { getDom } from './__mocks__/dom';
 import { CHILD_EL_ATTR, ROOT_EL_ATTR } from './constants';
 
-import { bindChildEventHandlers } from './events';
+import { bindEventHandlers } from './events';
 
 import HTMLApp from './HTMLApp';
 
@@ -86,15 +86,15 @@ describe('HTMLApp', () => {
       expect(onLoadApp.mock.calls[0][0]).toHaveLength(2);
     });
 
-    it('Should not call bindChildEventHandlers when no eventHandlers are provided', () => {
+    it('Should not call bindEventHandlers when no eventHandlers are provided', () => {
       new HTMLApp();
 
       loadWindow();
 
-      expect(bindChildEventHandlers).toHaveBeenCalledTimes(0);
+      expect(bindEventHandlers).toHaveBeenCalledTimes(0);
     });
 
-    it('Should call bindChildEventHandlers when eventHandlers are provided', () => {
+    it('Should call bindEventHandlers when eventHandlers are provided', () => {
       new HTMLApp({
         eventHandlers: [
           {
@@ -106,7 +106,7 @@ describe('HTMLApp', () => {
 
       loadWindow();
 
-      expect(bindChildEventHandlers).toHaveBeenCalledTimes(1);
+      expect(bindEventHandlers).toHaveBeenCalledTimes(1);
     });
   });
 });

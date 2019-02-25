@@ -1,13 +1,20 @@
 import { CHILD_EL_ATTR } from './constants';
 import { logDebug, getRootNode } from './utils';
-import { bindChildEventHandlers } from './events';
+import { bindEventHandlers } from './events';
 import { getEnhancedElement } from './elements';
+
+/**
+ * @typedef EventHandler
+ * @property id {string|undefined}
+ * @property root {boolean|undefined}
+ * @property document {boolean|undefined}
+ */
 
 /**
  * Options object used when the library is instantiated.
  * @typedef LibOptions
  * @property appName {string|undefined}
- * @property eventHandlers {{eventType: string, handlers: Object[]}[]}
+ * @property eventHandlers {EventHandler[]}
  * @property onLoadApp {Function|undefined}
  * @property onUnloadApp {Function|undefined}
  * @property debug {boolean}
@@ -56,14 +63,6 @@ class HTMLApp {
   }
 
   /**
-   * Returns true if the app currently has any provided eventHandlers.
-   * @returns {boolean}
-   */
-  hasChildEventHandlers() {
-    return this.opts.eventHandlers.length > 0;
-  }
-
-  /**
    * Side-effects triggered when the app initialises.
    */
   handleLoadApp() {
@@ -84,22 +83,25 @@ class HTMLApp {
    * Side-effects triggered when the app is unloaded.
    */
   handleUnloadApp() {
+    const { onUnloadApp } = this.opts;
+
     this.withApp(logDebug, 'unloading app');
+
+    if (onUnloadApp) {
+      onUnloadApp();
+    }
   }
 
   /**
    * Binds all provided eventHandlers to root element event eventHandlers.
    */
   handleBindAllListeners() {
-    if (this.hasChildEventHandlers()) {
-      bindChildEventHandlers(this.rootNode, this.opts.eventHandlers);
+    const { eventHandlers } = this.opts;
+
+    if (eventHandlers.length > 0) {
+      bindEventHandlers(this.rootNode, eventHandlers);
     }
   }
-
-  /**
-   * Unbinds all provided eventHandlers from root element event eventHandlers.
-   */
-  // handleUnBindAllListeners() {}
 
   /**
    * A wrapper method that will call the passed function with the current app instance
