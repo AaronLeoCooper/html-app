@@ -1,4 +1,4 @@
-import { CHILD_EL_ATTR } from './constants';
+import { EL_TARGET_ATTR } from './constants';
 import { logDebug, getRootNode } from './utils';
 import { bindEventHandlers } from './events';
 import { getEnhancedElement } from './elements';
@@ -55,7 +55,7 @@ class HTMLApp {
    * @returns {Object[]}
    */
   getAllChildNodes() {
-    const childNodes = this.rootNode.querySelectorAll(`[${CHILD_EL_ATTR}]`);
+    const childNodes = this.rootNode.querySelectorAll(`[${EL_TARGET_ATTR}]`);
 
     this.withApp(logDebug, 'childNodes:', childNodes);
 

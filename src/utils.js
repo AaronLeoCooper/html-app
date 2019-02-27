@@ -1,4 +1,4 @@
-import { CHILD_EL_ATTR, LIB_NAME, ROOT_EL_ATTR } from './constants';
+import { EL_TARGET_ATTR, LIB_NAME, ROOT_ATTR } from './constants';
 
 /**
  * Log an arbitrary message to the console if opts.debug is `true`.
@@ -35,7 +35,7 @@ function getAppError(...errorMessageParts) {
  * @returns {Element}
  */
 export function getRootNode(appName = '') {
-  const attr = `${ROOT_EL_ATTR}="${appName}"`;
+  const attr = `${ROOT_ATTR}="${appName}"`;
   const selector = `[${attr}]`;
 
   const rootElement = document.querySelector(selector);
@@ -67,7 +67,7 @@ export function getNormalisedEventName(event) {
  * @returns {Element | null}
  */
 export function getChildNode(rootNode, childName) {
-  return rootNode.querySelector(`[${CHILD_EL_ATTR}="${childName}"]`);
+  return rootNode.querySelector(`[${EL_TARGET_ATTR}="${childName}"]`);
 }
 
 /**

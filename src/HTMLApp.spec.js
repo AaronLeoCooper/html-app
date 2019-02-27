@@ -1,5 +1,5 @@
 import { getDom } from './__mocks__/dom';
-import { CHILD_EL_ATTR, ROOT_EL_ATTR } from './constants';
+import { EL_TARGET_ATTR, ROOT_ATTR } from './constants';
 
 import { bindEventHandlers } from './events';
 
@@ -24,7 +24,7 @@ describe('HTMLApp', () => {
     beforeEach(() => {
       jest.spyOn(window, 'addEventListener');
 
-      const div = getDom(`<div id="temp-div" ${ROOT_EL_ATTR}></div>`);
+      const div = getDom(`<div id="temp-div" ${ROOT_ATTR}></div>`);
       document.body.appendChild(div);
     });
 
@@ -74,7 +74,7 @@ describe('HTMLApp', () => {
     it('Should call onLoadApp if provided with all child nodes when the window is loaded', () => {
       document.body
         .querySelector('#temp-div')
-        .innerHTML = `<button ${CHILD_EL_ATTR}="button1"></button><button ${CHILD_EL_ATTR}="button2"></button>`;
+        .innerHTML = `<button ${EL_TARGET_ATTR}="button1"></button><button ${EL_TARGET_ATTR}="button2"></button>`;
 
       const onLoadApp = jest.fn();
 

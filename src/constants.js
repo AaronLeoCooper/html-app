@@ -1,11 +1,17 @@
 /**
- * CORE
+ * The name of the library.
+ * @type {string}
  */
 export const LIB_NAME = 'HTMLApp';
-export const ROOT_EL_ATTR = 'data-htmlapp';
-export const CHILD_EL_ATTR = 'data-ha';
 
 /**
- * EVENTS
+ * The attribute name used to denote the root element for an app instance.
+ * @type {string}
  */
-export const ROOT_EVENT_NODE_NAME = 'root';
+export const ROOT_ATTR = 'data-htmlapp';
+
+/**
+ * The attribute name used to denote target elements with an app instance.
+ * @type {string}
+ */
+export const EL_TARGET_ATTR = 'data-ha';
