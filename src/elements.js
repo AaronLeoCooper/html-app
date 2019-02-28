@@ -1,9 +1,28 @@
 import { EL_TARGET_ATTR } from './constants';
 
 /**
+ * @typedef EnhancedElement - A wrapper object around a DOM element reference.
+ * @property el {Element} - The DOM Element reference.
+ * @property id {string} - The unique target attribute value for the Element.
+ * @property setText {Function}
+ * @property setInnerHtml {Function}
+ * @property setClass {Function}
+ * @property removeClass {Function}
+ * @property setAttribute {Function}
+ * @property removeAttribute {Function}
+ * @property setStyle {Function}
+ * @property getText {Function}
+ * @property getInnerHtml {Function}
+ * @property getClasses {Function}
+ * @property getAttribute {Function}
+ * @property getAttributes {Function}
+ * @property getStyle {Function}
+ */
+
+/**
  * Returns an object wrapping the passed DOM element with helper functions.
  * @param el {Element} The DOM element being wrapped
- * @returns {{el: Element, id: string}}
+ * @returns {EnhancedElement}
  */
 export function getEnhancedElement(el) {
   /**

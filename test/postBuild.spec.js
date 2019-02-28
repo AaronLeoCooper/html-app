@@ -7,8 +7,8 @@ const esPackageStats = statSync(resolve(__dirname, '../dist/html-app.es.js'));
 const browserPackageStats = statSync(resolve(__dirname, '../dist/html-app.browser.js'));
 const browserMinPackageStats = statSync(resolve(__dirname, '../dist/html-app.browser.min.js'));
 
-const esFileSizeThreshold = [10000, 15000];
-const browserFileSizeThreshold = [10000, 15000];
+const esFileSizeThreshold = [15000, 20000];
+const browserFileSizeThreshold = [15000, 20000];
 const browserMinFileSizeThreshold = [2500, 7000];
 
 describe('Post-build tests', () => {
