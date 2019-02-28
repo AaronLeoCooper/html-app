@@ -1,3 +1,4 @@
+import { getNewEl } from './__mocks__/dom';
 import { EL_TARGET_ATTR } from './constants';
 
 import { getEnhancedElement } from './elements';
@@ -5,12 +6,13 @@ import { getEnhancedElement } from './elements';
 describe('elements', () => {
   describe('getEnhancedElement', () => {
     const createEl = ({ attributes = [], content = '' } = {}) => {
-      const el = document.createElement('button');
-      el.setAttribute('id', 'test-child');
-      el.innerHTML = content;
-
-      attributes.forEach(([name, value]) => {
-        el.setAttribute(name, value);
+      const el = getNewEl({
+        tagName: 'button',
+        content,
+        attributes: [
+          ['id', 'test-child'],
+          ...attributes
+        ]
       });
 
       document.body.appendChild(el);

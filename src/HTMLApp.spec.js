@@ -1,4 +1,4 @@
-import { getDom } from './__mocks__/dom';
+import { getNewEl } from './__mocks__/dom';
 import { EL_TARGET_ATTR, ROOT_ATTR } from './constants';
 
 import { bindEventHandlers } from './events';
@@ -21,11 +21,19 @@ describe('HTMLApp', () => {
   });
 
   describe('Root node in the DOM', () => {
+    let rootNode;
+
     beforeEach(() => {
       jest.spyOn(window, 'addEventListener');
 
-      const div = getDom(`<div id="temp-div" ${ROOT_ATTR}></div>`);
-      document.body.appendChild(div);
+      rootNode = getNewEl({
+        attributes: [
+          ['id', 'temp-div'],
+          [ROOT_ATTR]
+        ]
+      });
+
+      document.body.appendChild(rootNode);
     });
 
     afterEach(() => {
@@ -95,18 +103,17 @@ describe('HTMLApp', () => {
     });
 
     it('Should call bindEventHandlers when eventHandlers are provided', () => {
-      new HTMLApp({
-        eventHandlers: [
-          {
-            id: 'node',
-            onClick: () => undefined
-          }
-        ]
-      });
+      const eventHandlers = [
+        { id: 'node1', onClick: () => undefined },
+        { id: 'node2', onClick: () => undefined }
+      ];
+
+      new HTMLApp({ eventHandlers });
 
       loadWindow();
 
       expect(bindEventHandlers).toHaveBeenCalledTimes(1);
+      expect(bindEventHandlers).toHaveBeenCalledWith(rootNode, eventHandlers);
     });
   });
 });

@@ -1,6 +1,13 @@
-export const getDom = (innerHtml) => {
-  const div = document.createElement('div');
-  div.innerHTML = innerHtml;
+export const getNewEl = ({ tagName = 'div', attributes = [], content = '' }) => {
+  const el = document.createElement(tagName);
 
-  return div;
+  attributes.forEach(([name, value = '']) => {
+    el.setAttribute(name, value);
+  });
+
+  if (content) {
+    el.innerHTML = content;
+  }
+
+  return el;
 };

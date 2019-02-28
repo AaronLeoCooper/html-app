@@ -43,6 +43,7 @@ export function getEnhancedElement(el) {
     /**
      * Safely sets element text content.
      * @param {string} text
+     * @returns {EnhancedElement}
      */
     setText: withWrapper(text => {
       el.textContent = text;
@@ -51,6 +52,7 @@ export function getEnhancedElement(el) {
     /**
      * Unsafely sets element innerHTML.
      * @param {string} htmlStr
+     * @returns {EnhancedElement}
      */
     setInnerHtml: withWrapper(htmlStr => {
       el.innerHTML = htmlStr;
@@ -59,6 +61,7 @@ export function getEnhancedElement(el) {
     /**
      * Adds one or more classes to the element. Invalid values will be ignored.
      * @param {...string} classes
+     * @returns {EnhancedElement}
      */
     setClass: withWrapper((...classes) => {
       el.classList.add(...classes.filter(Boolean));
@@ -67,6 +70,7 @@ export function getEnhancedElement(el) {
     /**
      * Removes one or more classes from the element. Invalid values will be ignored.
      * @param {...string} classes
+     * @returns {EnhancedElement}
      */
     removeClass: withWrapper((...classes) => {
       el.classList.remove(...classes.filter(Boolean));
@@ -76,6 +80,7 @@ export function getEnhancedElement(el) {
      * Sets a single named attribute value.
      * @param {string} attributeName
      * @param {string} value
+     * @returns {EnhancedElement}
      */
     setAttribute: withWrapper((attributeName, value) => {
       el.setAttribute(attributeName, value);
@@ -84,6 +89,7 @@ export function getEnhancedElement(el) {
     /**
      * Removes a single named attribute.
      * @param {string} attributeName
+     * @returns {EnhancedElement}
      */
     removeAttribute: withWrapper((attributeName) => {
       el.removeAttribute(attributeName);
@@ -93,6 +99,7 @@ export function getEnhancedElement(el) {
      * Sets a single named style value.
      * @param {string} styleName
      * @param {string} value
+     * @returns {EnhancedElement}
      */
     setStyle: withWrapper((styleName, value) => {
       el.style[styleName] = value;
