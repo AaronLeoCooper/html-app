@@ -1,5 +1,5 @@
-import { getDom } from './__mocks__/dom';
-import { CHILD_EL_ATTR, LIB_NAME, ROOT_EL_ATTR } from './constants';
+import { getNewEl } from './__mocks__/dom';
+import { EL_TARGET_ATTR, LIB_NAME, ROOT_ATTR } from './constants';
 
 import {
   logDebug,
@@ -59,7 +59,7 @@ describe('utils', () => {
   });
 
   describe('getRootNode', () => {
-    const div = getDom(`<div ${ROOT_EL_ATTR} id="test-htmlapp"></div>`);
+    const div = getNewEl({ content: `<div ${ROOT_ATTR} id="test-htmlapp"></div>` });
 
     afterEach(() => {
       if (document.querySelector('#test-htmlapp')) {
@@ -90,7 +90,7 @@ describe('utils', () => {
 
   describe('getChildNode', () => {
     it('Should return null when the child element is not within the rootNode', () => {
-      const rootNode = getDom('<div><div></div></div>');
+      const rootNode = getNewEl({ content: '<div><div></div></div>' });
 
       const result = getChildNode(rootNode, '');
 
@@ -98,9 +98,9 @@ describe('utils', () => {
     });
 
     it('Should return null when the child element is not within the rootNode', () => {
-      const rootNode = getDom(
-        `<div><div ${CHILD_EL_ATTR}="test-child" id="test-child-node"></div></div>`
-      );
+      const rootNode = getNewEl({
+        content: `<div><div ${EL_TARGET_ATTR}="test-child" id="test-child-node"></div></div>`
+      });
 
       const result = getChildNode(rootNode, 'test-child');
 

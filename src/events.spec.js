@@ -1,8 +1,8 @@
 import { getByText, fireEvent } from 'dom-testing-library';
 
-import { CHILD_EL_ATTR, ROOT_EL_ATTR } from './constants';
+import { EL_TARGET_ATTR, ROOT_ATTR } from './constants';
 
-import { getDom } from './__mocks__/dom';
+import { getNewEl } from './__mocks__/dom';
 import {
   dummyEventHandlers,
   documentEvents,
@@ -19,7 +19,9 @@ const noop = () => undefined;
 describe('events', () => {
   describe('getMatchingHandlers', () => {
     it('Should return all handlers that match the event target', () => {
-      const rootNode = getDom(`<div><button ${CHILD_EL_ATTR}="button1">Button</button></div>`);
+      const rootNode = getNewEl({
+        content: `<div><button ${EL_TARGET_ATTR}="button1">Button</button></div>`
+      });
 
       const e = {
         target: rootNode.querySelector('button')
@@ -40,7 +42,9 @@ describe('events', () => {
     });
 
     it('Should return an empty array when no handlers match the event target', () => {
-      const rootNode = getDom(`<div><button ${CHILD_EL_ATTR}="button1">Button</button></div>`);
+      const rootNode = getNewEl({
+        content: `<div><button ${EL_TARGET_ATTR}="button1">Button</button></div>`
+      });
 
       const e = {
         target: rootNode.querySelector('button')
@@ -93,13 +97,15 @@ describe('events', () => {
   });
 
   describe('bindEventHandlers', () => {
-    const getPopulatedDom = () => getDom(
-      `<div ${ROOT_EL_ATTR}>` +
-        `<button ${CHILD_EL_ATTR}="button1">HA Button 1</button>` +
-        `<button ${CHILD_EL_ATTR}="button2">HA Button 2</button>` +
-        '<button>Not HA Button</button>' +
-      '</div>'
-    );
+    const getRootNode = () => getNewEl({
+      attributes: [
+        [ROOT_ATTR]
+      ],
+      content:
+        `<button ${EL_TARGET_ATTR}="button1">HA Button 1</button>` +
+        `<button ${EL_TARGET_ATTR}="button2">HA Button 2</button>` +
+        '<button>Not HA Button</button>'
+    });
 
     const button1ClickHandler = jest.fn();
     const button2ClickHandler = jest.fn();
@@ -117,7 +123,7 @@ describe('events', () => {
 
     describe('Child events', () => {
       it('Should bind one event listener for each event type', () => {
-        const dom = getPopulatedDom();
+        const dom = getRootNode();
 
         jest.spyOn(dom, 'addEventListener');
 
@@ -127,7 +133,7 @@ describe('events', () => {
       });
 
       it('Should trigger one callback when a matching data-ha node event is triggered', () => {
-        const dom = getPopulatedDom();
+        const dom = getRootNode();
 
         bindEventHandlers(dom, eventHandlers);
 
@@ -138,7 +144,7 @@ describe('events', () => {
       });
 
       it('Should trigger multiple callbacks when a matching data-ha node event is triggered', () => {
-        const dom = getPopulatedDom();
+        const dom = getRootNode();
 
         bindEventHandlers(dom, eventHandlers);
 
@@ -149,7 +155,7 @@ describe('events', () => {
       });
 
       it('Should not trigger callbacks when a non data-ha node event is triggered', () => {
-        const dom = getPopulatedDom();
+        const dom = getRootNode();
 
         bindEventHandlers(dom, eventHandlers);
 
@@ -160,7 +166,7 @@ describe('events', () => {
       });
 
       it('Should not trigger callbacks when an unmatched event type is triggered', () => {
-        const dom = getPopulatedDom();
+        const dom = getRootNode();
 
         bindEventHandlers(dom, eventHandlers);
 
@@ -183,7 +189,7 @@ describe('events', () => {
       ];
 
       it('Should trigger a root callback when a child data-ha node event is triggered', () => {
-        const dom = getPopulatedDom();
+        const dom = getRootNode();
 
         bindEventHandlers(dom, rootEventHandlers);
 
@@ -194,7 +200,7 @@ describe('events', () => {
       });
 
       it('Should trigger a root callback when a non data-ha node event is triggered', () => {
-        const dom = getPopulatedDom();
+        const dom = getRootNode();
 
         bindEventHandlers(dom, rootEventHandlers);
 
@@ -205,7 +211,7 @@ describe('events', () => {
       });
 
       it('Should should trigger a root callback with ignoreChildren: true when a root node event is triggered', () => {
-        const dom = getPopulatedDom();
+        const dom = getRootNode();
 
         bindEventHandlers(dom, rootEventHandlers);
 
@@ -215,7 +221,7 @@ describe('events', () => {
       });
 
       it('Should not trigger a root callback with ignoreChildren: true when a non data-ha node event is triggered', () => {
-        const dom = getPopulatedDom();
+        const dom = getRootNode();
 
         bindEventHandlers(dom, rootEventHandlers);
 
@@ -231,12 +237,23 @@ describe('events', () => {
 
       const documentEventHandlers = [
         ...eventHandlers,
-        { root: true, onClick: documentOnClick, onChange: documentOnChange }
+        { document: true, onClick: documentOnClick, onChange: documentOnChange }
       ];
 
-      it('Should trigger a document event callback when any node event is trigger', () => {
-        const dom = getPopulatedDom();
+      let dom;
 
+      beforeEach(() => {
+        dom = getRootNode();
+        document.body.appendChild(dom);
+      });
+
+      afterEach(() => {
+        if (dom) {
+          dom.remove();
+        }
+      });
+
+      it('Should trigger a document event callback when any node event is trigger', () => {
         bindEventHandlers(dom, documentEventHandlers);
 
         fireEvent.click(getByText(dom, 'Not HA Button'));

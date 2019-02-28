@@ -1,22 +1,22 @@
-import { CHILD_EL_ATTR } from './constants';
+import { EL_TARGET_ATTR } from './constants';
 import { logDebug, getRootNode } from './utils';
 import { bindEventHandlers } from './events';
 import { getEnhancedElement } from './elements';
 
 /**
  * @typedef EventHandler
- * @property id {string|undefined}
- * @property root {boolean|undefined}
- * @property document {boolean|undefined}
+ * @property id {string=}
+ * @property root {boolean=}
+ * @property document {boolean=}
  */
 
 /**
  * Options object used when the library is instantiated.
  * @typedef LibOptions
- * @property appName {string|undefined}
+ * @property appName {string=}
  * @property eventHandlers {EventHandler[]}
- * @property onLoadApp {Function|undefined}
- * @property onUnloadApp {Function|undefined}
+ * @property onLoadApp {Function=}
+ * @property onUnloadApp {Function=}
  * @property debug {boolean}
  */
 
@@ -51,11 +51,12 @@ class HTMLApp {
   }
 
   /**
-   * Returns all elements within the root element that have the app child attribute.
-   * @returns {Object[]}
+   * Returns all nodes within the root element that have the element target attribute.
+   * Nodes are enhanced with wrapper properties/methods.
+   * @returns {EnhancedElement[]}
    */
-  getAllChildNodes() {
-    const childNodes = this.rootNode.querySelectorAll(`[${CHILD_EL_ATTR}]`);
+  getEnhancedChildNodes() {
+    const childNodes = this.rootNode.querySelectorAll(`[${EL_TARGET_ATTR}]`);
 
     this.withApp(logDebug, 'childNodes:', childNodes);
 
@@ -70,10 +71,10 @@ class HTMLApp {
 
     this.withApp(logDebug, 'loading app');
 
-    this.handleBindAllListeners();
+    this.handleBindEventHandlers();
 
     if (onLoadApp) {
-      const childNodes = this.getAllChildNodes();
+      const childNodes = this.getEnhancedChildNodes();
 
       onLoadApp(childNodes);
     }
@@ -95,7 +96,7 @@ class HTMLApp {
   /**
    * Binds all provided eventHandlers to root element event eventHandlers.
    */
-  handleBindAllListeners() {
+  handleBindEventHandlers() {
     const { eventHandlers } = this.opts;
 
     if (eventHandlers.length > 0) {
@@ -106,10 +107,8 @@ class HTMLApp {
   /**
    * A wrapper method that will call the passed function with the current app instance
    * (`this`) as the first argument and spread all other arguments afterwards.
-   * Usage:
-   *   this.withApp(myFunc, 'abc', 123);
-   * Result:
-   *   myFunc(this, 'abc', 123);
+   * Usage: this.withApp(myFunc, 'abc', 123);
+   * Result: myFunc(this, 'abc', 123);
    * @param {Function} callback - The function to be invoked with the app instance provided
    * @param {*} args - Any arguments to be passed from the second argument onwards
    * @return {*}
