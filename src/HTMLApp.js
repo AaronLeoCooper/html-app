@@ -51,10 +51,11 @@ class HTMLApp {
   }
 
   /**
-   * Returns all elements within the root element that have the app child attribute.
+   * Returns all nodes within the root element that have the element target attribute.
+   * Nodes are enhanced with wrapper properties/methods.
    * @returns {EnhancedElement[]}
    */
-  getAllChildNodes() {
+  getEnhancedChildNodes() {
     const childNodes = this.rootNode.querySelectorAll(`[${EL_TARGET_ATTR}]`);
 
     this.withApp(logDebug, 'childNodes:', childNodes);
@@ -73,7 +74,7 @@ class HTMLApp {
     this.handleBindEventHandlers();
 
     if (onLoadApp) {
-      const childNodes = this.getAllChildNodes();
+      const childNodes = this.getEnhancedChildNodes();
 
       onLoadApp(childNodes);
     }

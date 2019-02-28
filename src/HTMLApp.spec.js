@@ -1,4 +1,4 @@
-import { getNewEl } from './__mocks__/dom';
+import { getNewEl, dispatchEvent } from './__mocks__/dom';
 import { EL_TARGET_ATTR, ROOT_ATTR } from './constants';
 
 import { bindEventHandlers } from './events';
@@ -6,12 +6,6 @@ import { bindEventHandlers } from './events';
 import HTMLApp from './HTMLApp';
 
 jest.mock('./events');
-jest.mock('./elements');
-
-const loadWindow = () => {
-  const loadEvent = new CustomEvent('load');
-  window.dispatchEvent(loadEvent);
-};
 
 describe('HTMLApp', () => {
   describe('Root node not in the DOM', () => {
@@ -39,81 +33,101 @@ describe('HTMLApp', () => {
     afterEach(() => {
       jest.clearAllMocks();
 
-      const tempDiv = document.body.querySelector('#temp-div');
-
-      if (tempDiv) {
-        tempDiv.remove();
+      if (rootNode) {
+        rootNode.remove();
       }
     });
 
-    it('Should bind a window load event listener when initialised', () => {
-      new HTMLApp();
+    describe('On load', () => {
+      it('Should bind a window load event listener when initialised', () => {
+        new HTMLApp();
 
-      expect(window.addEventListener).toHaveBeenCalledTimes(2);
+        expect(window.addEventListener).toHaveBeenCalledTimes(2);
 
-      const firstEventListener = window.addEventListener.mock.calls[0];
+        const firstEventListener = window.addEventListener.mock.calls[0];
 
-      expect(firstEventListener[0]).toBe('load');
-      expect(typeof firstEventListener[1]).toBe('function');
+        expect(firstEventListener[0]).toBe('load');
+        expect(typeof firstEventListener[1]).toBe('function');
+      });
+
+      it('Should call onLoadApp if provided when the window is loaded', () => {
+        const onLoadApp = jest.fn();
+
+        new HTMLApp({ onLoadApp });
+
+        dispatchEvent(window, 'load');
+
+        expect(onLoadApp).toHaveBeenCalledTimes(1);
+        expect(onLoadApp).toHaveBeenCalledWith([]);
+      });
+
+      it('Should call onLoadApp with all child nodes when the window is loaded', () => {
+        rootNode.innerHTML =
+          `<button ${EL_TARGET_ATTR}="button1"></button>` +
+          '<button></button>' +
+          `<button ${EL_TARGET_ATTR}="button2"></button>`;
+
+        const onLoadApp = jest.fn();
+
+        new HTMLApp({ onLoadApp });
+
+        dispatchEvent(window, 'load');
+
+        expect(onLoadApp).toHaveBeenCalledTimes(1);
+        expect(onLoadApp).toHaveBeenCalledWith(
+          expect.arrayContaining([
+            expect.objectContaining({ id: 'button1' }),
+            expect.objectContaining({ id: 'button2' })
+          ])
+        );
+      });
     });
 
-    it('Should bind a window beforeunload event listener when initialised', () => {
-      new HTMLApp();
+    describe('On unload', () => {
+      it('Should bind a window beforeunload event listener when initialised', () => {
+        new HTMLApp();
 
-      expect(window.addEventListener).toHaveBeenCalledTimes(2);
+        expect(window.addEventListener).toHaveBeenCalledTimes(2);
 
-      const secondEventListener = window.addEventListener.mock.calls[1];
+        const secondEventListener = window.addEventListener.mock.calls[1];
 
-      expect(secondEventListener[0]).toBe('beforeunload');
-      expect(typeof secondEventListener[1]).toBe('function');
+        expect(secondEventListener[0]).toBe('beforeunload');
+        expect(typeof secondEventListener[1]).toBe('function');
+      });
+
+      it('Should call onUnloadApp is provided before the window unloads', () => {
+        const onUnloadApp = jest.fn();
+
+        new HTMLApp({ onUnloadApp });
+
+        dispatchEvent(window, 'beforeunload');
+
+        expect(onUnloadApp).toHaveBeenCalledTimes(1);
+      });
     });
 
-    it('Should call onLoadApp if provided when the window is loaded', () => {
-      const onLoadApp = jest.fn();
+    describe('Binding event handlers', () => {
+      it('Should not call bindEventHandlers when no eventHandlers are provided', () => {
+        new HTMLApp();
 
-      new HTMLApp({ onLoadApp });
+        dispatchEvent(window, 'load');
 
-      loadWindow();
+        expect(bindEventHandlers).toHaveBeenCalledTimes(0);
+      });
 
-      expect(onLoadApp).toHaveBeenCalledTimes(1);
-      expect(onLoadApp).toHaveBeenCalledWith([]);
-    });
+      it('Should call bindEventHandlers when eventHandlers are provided', () => {
+        const eventHandlers = [
+          { id: 'node1', onClick: () => undefined },
+          { id: 'node2', onClick: () => undefined }
+        ];
 
-    it('Should call onLoadApp if provided with all child nodes when the window is loaded', () => {
-      document.body
-        .querySelector('#temp-div')
-        .innerHTML = `<button ${EL_TARGET_ATTR}="button1"></button><button ${EL_TARGET_ATTR}="button2"></button>`;
+        new HTMLApp({ eventHandlers });
 
-      const onLoadApp = jest.fn();
+        dispatchEvent(window, 'load');
 
-      new HTMLApp({ onLoadApp });
-
-      loadWindow();
-
-      expect(onLoadApp).toHaveBeenCalledTimes(1);
-      expect(onLoadApp.mock.calls[0][0]).toHaveLength(2);
-    });
-
-    it('Should not call bindEventHandlers when no eventHandlers are provided', () => {
-      new HTMLApp();
-
-      loadWindow();
-
-      expect(bindEventHandlers).toHaveBeenCalledTimes(0);
-    });
-
-    it('Should call bindEventHandlers when eventHandlers are provided', () => {
-      const eventHandlers = [
-        { id: 'node1', onClick: () => undefined },
-        { id: 'node2', onClick: () => undefined }
-      ];
-
-      new HTMLApp({ eventHandlers });
-
-      loadWindow();
-
-      expect(bindEventHandlers).toHaveBeenCalledTimes(1);
-      expect(bindEventHandlers).toHaveBeenCalledWith(rootNode, eventHandlers);
+        expect(bindEventHandlers).toHaveBeenCalledTimes(1);
+        expect(bindEventHandlers).toHaveBeenCalledWith(rootNode, eventHandlers);
+      });
     });
   });
 });
