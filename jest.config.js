@@ -5,5 +5,13 @@ module.exports = {
     '/examples/',
     '/test/'
   ],
-  collectCoverageFrom: ['src/**/*.js']
+  collectCoverageFrom: ['src/**/*.js'],
+  coverageThreshold: {
+    global: {
+      branches: 95,
+      functions: 95,
+      lines: 95,
+      statements: 95
+    }
+  }
 };

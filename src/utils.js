@@ -1,19 +1,20 @@
-import { CHILD_EL_ATTR, LIB_NAME, ROOT_EL_ATTR } from './constants';
+import { CHILD_ATTR, LIB_NAME, ROOT_ATTR } from './constants';
+import { getEnhancedElement } from './elements';
 
 /**
- * Log an arbitrary message to the console if opts.debug is `true`.
- * @param app {{opts: LibOptions}}
+ * Log an arbitrary message to the console if options.debug is `true`.
+ * @param options {LibOptions}
  * @param logMessageParts {*}
  */
-export function logDebug(app, ...logMessageParts) {
-  if (app.opts.debug) {
-    const suffix = app.opts.appName
-      ? ` ${app.opts.appName}`
+export function logDebug(options, ...logMessageParts) {
+  if (options.debug) {
+    const suffix = options.appName
+      ? ` ${options.appName}`
       : '';
 
     console.info(
       `%c[DEBUG ${LIB_NAME}${suffix}]:`,
-      'color: green; font-weight: bold;',
+      'color: blue; font-weight: bold;',
       ...logMessageParts
     );
   }
@@ -23,32 +24,94 @@ export function logDebug(app, ...logMessageParts) {
  * Returns an Error instance with a message prefixed by the lib name. Expects one or many
  * string parameters to be joined together in the error message by spaces.
  * @param errorMessageParts
+ * @constructor
  * @returns {Error}
  */
-function getAppError(...errorMessageParts) {
+export function AppError(...errorMessageParts) {
   return new Error(`${LIB_NAME} - ${errorMessageParts.join(' ')}`);
 }
 
 /**
  * Returns the root node for an app instance, based on the optionally passed appName value.
  * @param appName {string}
- * @returns {Element}
+ * @returns {Element|null}
  */
 export function getRootNode(appName = '') {
-  const attr = `${ROOT_EL_ATTR}="${appName}"`;
+  const attr = `${ROOT_ATTR}="${appName}"`;
   const selector = `[${attr}]`;
 
-  const rootElement = document.querySelector(selector);
+  return document.querySelector(selector);
+}
 
-  if (!rootElement) {
-    throw getAppError(
-      'Unable to locate app root element with attribute:',
-      attr,
-      'Make sure an element is present in the HTML document with this attribute.'
-    );
+/**
+ * Returns an array of child elements within the root element that have the child attribute,
+ * or an empty array if there are no child elements.
+ * @param rootNode {Element}
+ * @returns {Element[]}
+ */
+export function getChildNodes(rootNode) {
+  const childrenNodeList = rootNode.querySelectorAll(`[${CHILD_ATTR}]`);
+
+  return Array.prototype.slice.call(childrenNodeList);
+}
+
+/**
+ * Returns all nodes within the root element that have the element target attribute.
+ * Nodes are enhanced with wrapper properties/methods.
+ * @param enhancedRootNode {EnhancedElement}
+ * @returns {EnhancedElement[]}
+ */
+export function getEnhancedChildNodes(enhancedRootNode) {
+  const childNodes = getChildNodes(enhancedRootNode.el);
+
+  if (childNodes.length === 0) {
+    /**
+     * TODO: Add warning for no child nodes being found
+     */
   }
 
-  return rootElement;
+  /**
+   * TODO: Add warning for duplicate child node ids
+   */
+
+  return childNodes.map(getEnhancedElement);
+}
+
+/**
+ * Returns a specific child node by its name.
+ * @param rootNode {Element}
+ * @param childName {string}
+ * @returns {Element|null}
+ */
+export function getChildNode(rootNode, childName) {
+  return rootNode.querySelector(`[${CHILD_ATTR}="${childName}"]`);
+}
+
+/**
+ * Returns an array of event handlers with ids replaced with their respective
+ * enhanced child node. Event handlers with ids that don't match a child node
+ * will be filtered out. Root and Document event handlers are returned unmodified.
+ * @param eventHandlers {EventHandler[]}
+ * @param enhancedChildNodes {EnhancedElement[]}
+ * @returns {{enhancedEl: EnhancedElement}[]}
+ */
+export function getEnhancedEventHandlers(eventHandlers, enhancedChildNodes) {
+  return eventHandlers
+    .filter((eventHandler) =>
+      enhancedChildNodes.some(({ id }) => id === eventHandler.id) ||
+      eventHandler.root ||
+      eventHandler.document
+    )
+    .map((eventHandler) => {
+      if (eventHandler.document || eventHandler.root) {
+        return eventHandler;
+      }
+
+      return {
+        ...eventHandler,
+        enhancedEl: enhancedChildNodes.find(({ id }) => id === eventHandler.id)
+      };
+    });
 }
 
 /**
@@ -58,16 +121,6 @@ export function getRootNode(appName = '') {
  */
 export function getNormalisedEventName(event) {
   return event.toLowerCase().slice(2);
-}
-
-/**
- * Returns a specific child node by its name.
- * @param rootNode {Element}
- * @param childName {string}
- * @returns {Element | null}
- */
-export function getChildNode(rootNode, childName) {
-  return rootNode.querySelector(`[${CHILD_EL_ATTR}="${childName}"]`);
 }
 
 /**

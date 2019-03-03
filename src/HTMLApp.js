@@ -1,22 +1,22 @@
-import { CHILD_EL_ATTR } from './constants';
-import { logDebug, getRootNode } from './utils';
+import { AppError, getEnhancedChildNodes, getEnhancedEventHandlers, getRootNode, logDebug } from './utils';
 import { bindEventHandlers } from './events';
 import { getEnhancedElement } from './elements';
+import { ROOT_ATTR } from './constants';
 
 /**
  * @typedef EventHandler
- * @property id {string|undefined}
- * @property root {boolean|undefined}
- * @property document {boolean|undefined}
+ * @property id {string=}
+ * @property root {boolean=}
+ * @property document {boolean=}
  */
 
 /**
  * Options object used when the library is instantiated.
  * @typedef LibOptions
- * @property appName {string|undefined}
+ * @property appName {string=}
  * @property eventHandlers {EventHandler[]}
- * @property onLoadApp {Function|undefined}
- * @property onUnloadApp {Function|undefined}
+ * @property onLoadApp {Function=}
+ * @property onUnloadApp {Function=}
  * @property debug {boolean}
  */
 
@@ -33,89 +33,79 @@ const DEFAULT_OPTIONS = {
 
 /**
  * Core library class.
+ * @param {LibOptions=} options - User-defined options object
+ * @constructor
  */
-class HTMLApp {
-  /**
-   * @param options {LibOptions}
-   */
-  constructor(options = {}) {
-    this.opts = {
-      ...DEFAULT_OPTIONS,
-      ...options
-    };
+function HTMLApp(options) {
+  this.__opts = {
+    ...DEFAULT_OPTIONS,
+    ...options
+  };
 
-    this.rootNode = getRootNode(this.opts.appName);
+  const rootNode = getRootNode(this.__opts.appName);
 
-    window.addEventListener('load', this.handleLoadApp.bind(this));
-    window.addEventListener('beforeunload', this.handleUnloadApp.bind(this));
+  if (!rootNode) {
+    throw new AppError(
+      'Unable to locate the app root element with attribute:',
+      `${ROOT_ATTR}="${this.__opts.appName}".`,
+      'Make sure an element is present in the document with this attribute.'
+    );
   }
 
-  /**
-   * Returns all elements within the root element that have the app child attribute.
-   * @returns {Object[]}
-   */
-  getAllChildNodes() {
-    const childNodes = this.rootNode.querySelectorAll(`[${CHILD_EL_ATTR}]`);
+  this.__enhancedRootNode = getEnhancedElement(rootNode);
+  this.__enhancedChildNodes = getEnhancedChildNodes(this.__enhancedRootNode);
 
-    this.withApp(logDebug, 'childNodes:', childNodes);
+  window.addEventListener('load', handleLoadApp.bind(this));
+  window.addEventListener('beforeunload', handleUnloadApp.bind(this));
+}
 
-    return Array.prototype.map.call(childNodes, getEnhancedElement);
+/**
+ * Returns the matching enhanced child node for the passed child node name, or undefined if
+ * the child doesn't exist within the root node tree.
+ * @param childNodeName {string}
+ * @returns {(EnhancedElement|undefined)}
+ */
+HTMLApp.prototype.getEl = function getEl(childNodeName) {
+  return this.__enhancedChildNodes.find(({ id }) => id === childNodeName);
+};
+
+/**
+ * Returns the enhanced root node for the app instance.
+ * @returns {EnhancedElement}
+ */
+HTMLApp.prototype.getRootEl = function getRootEl() {
+  return this.__enhancedRootNode;
+};
+
+/**
+ * Side-effects triggered when the app initialises.
+ */
+function handleLoadApp() {
+  const { eventHandlers, onLoadApp } = this.__opts;
+
+  logDebug(this.__opts, 'loading app');
+
+  const enhancedEventHandlers = getEnhancedEventHandlers(eventHandlers, this.__enhancedChildNodes);
+
+  if (enhancedEventHandlers.length > 0) {
+    bindEventHandlers(this.__enhancedRootNode, enhancedEventHandlers, this);
   }
 
-  /**
-   * Side-effects triggered when the app initialises.
-   */
-  handleLoadApp() {
-    const { onLoadApp } = this.opts;
-
-    this.withApp(logDebug, 'loading app');
-
-    this.handleBindAllListeners();
-
-    if (onLoadApp) {
-      const childNodes = this.getAllChildNodes();
-
-      onLoadApp(childNodes);
-    }
+  if (onLoadApp) {
+    onLoadApp(this.__enhancedRootNode, this.__enhancedChildNodes, this);
   }
+}
 
-  /**
-   * Side-effects triggered when the app is unloaded.
-   */
-  handleUnloadApp() {
-    const { onUnloadApp } = this.opts;
+/**
+ * Side-effects triggered when the app is unloaded.
+ */
+function handleUnloadApp() {
+  const { onUnloadApp } = this.__opts;
 
-    this.withApp(logDebug, 'unloading app');
+  logDebug(this.__opts, 'unloading app');
 
-    if (onUnloadApp) {
-      onUnloadApp();
-    }
-  }
-
-  /**
-   * Binds all provided eventHandlers to root element event eventHandlers.
-   */
-  handleBindAllListeners() {
-    const { eventHandlers } = this.opts;
-
-    if (eventHandlers.length > 0) {
-      bindEventHandlers(this.rootNode, eventHandlers);
-    }
-  }
-
-  /**
-   * A wrapper method that will call the passed function with the current app instance
-   * (`this`) as the first argument and spread all other arguments afterwards.
-   * Usage:
-   *   this.withApp(myFunc, 'abc', 123);
-   * Result:
-   *   myFunc(this, 'abc', 123);
-   * @param {Function} callback - The function to be invoked with the app instance provided
-   * @param {*} args - Any arguments to be passed from the second argument onwards
-   * @return {*}
-   */
-  withApp(callback, ...args) {
-    return callback(this, ...args);
+  if (onUnloadApp) {
+    onUnloadApp();
   }
 }
 

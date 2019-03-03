@@ -14,12 +14,12 @@ Define your view with HTML:
 
 ```html
 <body>
+  <!-- define your app view -->
   <div data-htmlapp>
     <input data-ha="userName" />
     <span data-ha="userNameError"></span>
   </div>
-  
-  <!-- include your JS files: -->
+
   <script src="html-app.browser.min.js"></script>
   <script src="app.js"></script>
 </body>
@@ -33,13 +33,13 @@ new HTMLApp({
   eventHandlers: [
     {
       id: 'userName',
-      onChange: function(e, el) {
+      onChange: function(e, el, app) {
         if (!e.target.value) {
-          this.getEl('userNameError').setText('This field is required!');
+          app.getEl('userNameError').setText('This field is required!');
   
-          el.setClass('has-error');
+          el.addClass('has-error');
         } else {
-          this.getEl('userNameError').setText('');
+          app.getEl('userNameError').setText('');
   
           el.removeClass('has-error');
         }
@@ -54,7 +54,7 @@ Job done! 🎉
 ## Features
 
 - HTML is your view, JavaScript is your controller/model (the way we used to do web development!)
-- Listen to as many DOM events as necessary and react to them without browser "chug"
+- Easily react to as many events as required with no drop in performance
 - Thin DOM element wrappers provide just the right amount of helper methods for your app logic
 - No build/transpilation/configuration setup needed— stick it in a HTML page and off you go! 🚀
 
