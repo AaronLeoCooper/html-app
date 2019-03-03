@@ -20,14 +20,26 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-      - run: yarn install
+      - run:
+          name: Install dependencies
+          command: yarn install
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      - run: yarn lint
-      - run: yarn test
-      - run: yarn build
+      - run:
+          name: Linters
+          command: yarn lint --format junit -o reports/junit/js-lint-results.xml
+      - run:
+          name: Unit tests
+          command: yarn test --ci --runInBand
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
+      - run:
+          name: Build
+          command: yarn build
       - persist_to_workspace:
           root: ~/repo
           paths: .
