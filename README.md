@@ -1,4 +1,4 @@
-<p align="center"><img alt="HTMLApp" src="https://www.html-app.com/img/logo.png"></p>
+<p align="center"><a href="https://html-app.com"><img alt="HTMLApp" src="https://www.html-app.com/img/logo.png"></a></p>
 
 # HTMLApp
 
