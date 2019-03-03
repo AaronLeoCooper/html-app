@@ -62,13 +62,15 @@ Job done! 🎉
 
 ## Installation
 
-The compressed library JavaScript file can downloaded and included in your HTML pages:
+The compressed library JavaScript file can downloaded and included in your HTML pages, or
+linked to directly via the Unpkg CDN:
 
 ```html
-<script src="vendor/html-app.browser.min.js"></script>
+<script src="https://unpkg.com/html-app/dist/html-app.browser.min.js"></script>
 ```
 
-Or installed via NPM and included as an ES6 library import in your JavaScript files:
+Or alternatively if you're compiling your JS files with a bundler like Parcel or Webpack, it
+can be installed via NPM and included as an ES6 import in your JavaScript files:
 
 ```bash
 npm i html-app
