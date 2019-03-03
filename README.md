@@ -1,12 +1,14 @@
 # HTMLApp
 
+<p align="center"><img alt="HTMLApp" src="https://www.html-app.com/img/logo.png"></p>
+
 [![CircleCI](https://circleci.com/gh/AaronLeoCooper/html-app.svg?style=svg&circle-token=80bc42acba0754d42bc16d20afa52df4096c11fb)](https://circleci.com/gh/AaronLeoCooper/html-app)
 
 Need just a sprinkling of JS to enhance your HTML pages? ✨
 
 Create a HTML page, stick this JavaScript somewhere and off you go. Simple web apps done *simply*.
 
-Check out the docs at: [html-app.netlify.com](https://html-app.netlify.com).
+[Check out the docs!](https://html-app.com).
 
 ## Example
 
