@@ -1,6 +1,6 @@
-# HTMLApp
-
 <p align="center"><img alt="HTMLApp" src="https://www.html-app.com/img/logo.png"></p>
+
+# HTMLApp
 
 [![CircleCI](https://circleci.com/gh/AaronLeoCooper/html-app.svg?style=svg&circle-token=80bc42acba0754d42bc16d20afa52df4096c11fb)](https://circleci.com/gh/AaronLeoCooper/html-app)
 
