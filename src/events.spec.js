@@ -255,6 +255,8 @@ describe('events', () => {
     const button1ClickHandler = jest.fn();
     const button2ClickHandler = jest.fn();
 
+    const appInstance = { isTestApp: true };
+
     let enhancedRootNode;
     let eventHandlers;
 
@@ -285,13 +287,13 @@ describe('events', () => {
       it('Should bind one event listener for each event type', () => {
         jest.spyOn(enhancedRootNode.el, 'addEventListener');
 
-        bindEventHandlers(enhancedRootNode, eventHandlers);
+        bindEventHandlers(enhancedRootNode, eventHandlers, appInstance);
 
         expect(enhancedRootNode.el.addEventListener).toHaveBeenCalledTimes(2);
       });
 
       it('Should trigger one callback with event and enhanced node when matching node event triggered', () => {
-        bindEventHandlers(enhancedRootNode, eventHandlers);
+        bindEventHandlers(enhancedRootNode, eventHandlers, appInstance);
 
         const button1 = getByText(enhancedRootNode.el, 'HA Button 1');
         fireEvent.click(button1);
@@ -299,12 +301,13 @@ describe('events', () => {
         expect(button1ClickHandler).toHaveBeenCalledTimes(1);
         expect(button1ClickHandler.mock.calls[0][0].target).toEqual(button1);
         expect(button1ClickHandler.mock.calls[0][1].id).toBe('button1');
+        expect(button1ClickHandler.mock.calls[0][2]).toEqual(appInstance);
 
         expect(button2ClickHandler).toHaveBeenCalledTimes(0);
       });
 
       it('Should trigger multiple callbacks with event and enhanced node when matching data-ha node event triggered', () => {
-        bindEventHandlers(enhancedRootNode, eventHandlers);
+        bindEventHandlers(enhancedRootNode, eventHandlers, appInstance);
 
         const button2 = getByText(enhancedRootNode.el, 'HA Button 2');
         fireEvent.click(button2);
@@ -312,12 +315,13 @@ describe('events', () => {
         expect(button2ClickHandler).toHaveBeenCalledTimes(2);
         expect(button2ClickHandler.mock.calls[0][0].target).toEqual(button2);
         expect(button2ClickHandler.mock.calls[0][1].id).toBe('button2');
+        expect(button2ClickHandler.mock.calls[0][2]).toEqual(appInstance);
 
         expect(button1ClickHandler).toHaveBeenCalledTimes(0);
       });
 
       it('Should not trigger callbacks when a non data-ha node event is triggered', () => {
-        bindEventHandlers(enhancedRootNode, eventHandlers);
+        bindEventHandlers(enhancedRootNode, eventHandlers, appInstance);
 
         fireEvent.click(getByText(enhancedRootNode.el, 'Not HA Button'));
 
@@ -326,7 +330,7 @@ describe('events', () => {
       });
 
       it('Should not trigger callbacks when an unmatched event type is triggered', () => {
-        bindEventHandlers(enhancedRootNode, eventHandlers);
+        bindEventHandlers(enhancedRootNode, eventHandlers, appInstance);
 
         fireEvent.change(getByText(enhancedRootNode.el, 'HA Button 1'));
 
@@ -351,7 +355,7 @@ describe('events', () => {
       });
 
       it('Should trigger root callback with expected target and enhanced root node when child data-ha node event triggered', () => {
-        bindEventHandlers(enhancedRootNode, rootEventHandlers);
+        bindEventHandlers(enhancedRootNode, rootEventHandlers, appInstance);
 
         const button1 = getByText(enhancedRootNode.el, 'HA Button 1');
         fireEvent.click(button1);
@@ -359,12 +363,13 @@ describe('events', () => {
         expect(rootOnClick).toHaveBeenCalledTimes(1);
         expect(rootOnClick.mock.calls[0][0].target).toEqual(button1);
         expect(rootOnClick.mock.calls[0][1].el).toEqual(enhancedRootNode.el);
+        expect(rootOnClick.mock.calls[0][2]).toEqual(appInstance);
 
         expect(rootOnKeyDown).toHaveBeenCalledTimes(0);
       });
 
       it('Should trigger root callback with expected target and enhanced root node when non data-ha node event triggered', () => {
-        bindEventHandlers(enhancedRootNode, rootEventHandlers);
+        bindEventHandlers(enhancedRootNode, rootEventHandlers, appInstance);
 
         const nonHaButton = getByText(enhancedRootNode.el, 'Not HA Button');
         fireEvent.click(nonHaButton);
@@ -372,12 +377,13 @@ describe('events', () => {
         expect(rootOnClick).toHaveBeenCalledTimes(1);
         expect(rootOnClick.mock.calls[0][0].target).toEqual(nonHaButton);
         expect(rootOnClick.mock.calls[0][1].el).toEqual(enhancedRootNode.el);
+        expect(rootOnClick.mock.calls[0][2]).toEqual(appInstance);
 
         expect(rootOnKeyDown).toHaveBeenCalledTimes(0);
       });
 
       it('Should trigger a root callback with ignoreChildren: true when a root node event is triggered', () => {
-        bindEventHandlers(enhancedRootNode, rootEventHandlers);
+        bindEventHandlers(enhancedRootNode, rootEventHandlers, appInstance);
 
         fireEvent.click(enhancedRootNode.el);
 
@@ -385,7 +391,7 @@ describe('events', () => {
       });
 
       it('Should not trigger a root callback with ignoreChildren: true when a non data-ha node event is triggered', () => {
-        bindEventHandlers(enhancedRootNode, rootEventHandlers);
+        bindEventHandlers(enhancedRootNode, rootEventHandlers, appInstance);
 
         fireEvent.click(getByText(enhancedRootNode.el, 'Not HA Button'));
 
@@ -415,11 +421,15 @@ describe('events', () => {
       });
 
       it('Should trigger a document event callback when any node event is trigger', () => {
-        bindEventHandlers(enhancedRootNode, documentEventHandlers);
+        bindEventHandlers(enhancedRootNode, documentEventHandlers, appInstance);
 
-        fireEvent.click(getByText(enhancedRootNode.el, 'Not HA Button'));
+        const nonHaButton = getByText(enhancedRootNode.el, 'Not HA Button');
+        fireEvent.click(nonHaButton);
 
         expect(documentOnClick).toHaveBeenCalledTimes(1);
+        expect(documentOnClick.mock.calls[0][0].target).toEqual(nonHaButton);
+        expect(documentOnClick.mock.calls[0][1]).toEqual(appInstance);
+
         expect(documentOnChange).toHaveBeenCalledTimes(0);
       });
     });

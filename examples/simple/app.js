@@ -10,7 +10,7 @@ const formState = {
 
 const getChangeHandler = (name) => (e) => formState[name] = e.target.value;
 
-function onLoadApp(childNodes) {
+function onLoadApp(rootNode, childNodes) {
   Object.keys(formState).forEach((fieldName) => {
     const field = childNodes.find(({ id }) => id === fieldName);
 

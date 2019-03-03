@@ -1,12 +1,15 @@
 import { getNewEl } from './__mocks__/dom';
 import { CHILD_ATTR, LIB_NAME, ROOT_ATTR } from './constants';
+import { getEnhancedElement } from './elements';
 
 import {
   logDebug,
   getRootNode,
   getChildNodes,
-  getNormalisedEventName,
+  getEnhancedChildNodes,
   getChildNode,
+  getEnhancedEventHandlers,
+  getNormalisedEventName,
   isCamelcaseEventName
 } from './utils';
 
@@ -110,6 +113,41 @@ describe('utils', () => {
     });
   });
 
+  describe('getEnhancedChildNodes', () => {
+    it('Should return an array of enhanced child nodes from the passed elements', () => {
+      const enhancedRootNode = getEnhancedElement(
+        getNewEl({
+          attributes: [[ROOT_ATTR]],
+          content:
+            `<div ${CHILD_ATTR}="el1"></div>` +
+            `<div ${CHILD_ATTR}="el2"></div>`
+        })
+      );
+
+      const result = getEnhancedChildNodes(enhancedRootNode);
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ id: 'el2' }),
+          expect.objectContaining({ id: 'el2' })
+        ])
+      );
+    });
+
+    it('Should return an empty array when no child nodes have the child attribute', () => {
+      const enhancedRootNode = getEnhancedElement(
+        getNewEl({
+          attributes: [[ROOT_ATTR]],
+          content: '<div></div><div></div>'
+        })
+      );
+
+      const result = getEnhancedChildNodes(enhancedRootNode);
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('getChildNode', () => {
     it('Should return null when the child element is not within the rootNode', () => {
       const rootNode = getNewEl({ content: '<div><div></div></div>' });
@@ -128,6 +166,89 @@ describe('utils', () => {
 
       expect(result).toBeInstanceOf(Node);
       expect(result.id).toBe('test-child-node');
+    });
+  });
+
+  describe('getEnhancedEventHandlers', () => {
+    it('Should return an array of event handlers with matching enhanced nodes attached', () => {
+      const eventHandlers = [
+        { id: 'el1', onClick: () => undefined },
+        { id: 'el2', onClick: () => undefined }
+      ];
+
+      const enhancedChildNodes = [
+        getEnhancedElement(getNewEl({ attributes: [[CHILD_ATTR, 'el1']] })),
+        getEnhancedElement(getNewEl({ attributes: [[CHILD_ATTR, 'el2']] }))
+      ];
+
+      const result = getEnhancedEventHandlers(eventHandlers, enhancedChildNodes);
+
+      expect(result).toHaveLength(2);
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: 'el1',
+            enhancedEl: expect.objectContaining({ id: 'el1' })
+          }),
+          expect.objectContaining({
+            id: 'el2',
+            enhancedEl: expect.objectContaining({ id: 'el2' })
+          })
+        ])
+      );
+    });
+
+    it('Should return an array of only matched event handlers with enhanced nodes attached', () => {
+      const eventHandlers = [
+        { id: 'el2', onClick: () => undefined }
+      ];
+
+      const enhancedChildNodes = [
+        getEnhancedElement(getNewEl({ attributes: [[CHILD_ATTR, 'el1']] })),
+        getEnhancedElement(getNewEl({ attributes: [[CHILD_ATTR, 'el2']] }))
+      ];
+
+      const result = getEnhancedEventHandlers(eventHandlers, enhancedChildNodes);
+
+      expect(result).toHaveLength(1);
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: 'el2',
+            enhancedEl: expect.objectContaining({ id: 'el2' })
+          })
+        ])
+      );
+    });
+
+    it('Should return an array of matched event handlers and root/document event handlers', () => {
+      const eventHandlers = [
+        { root: true, onChange: () => undefined },
+        { id: 'el2', onClick: () => undefined },
+        { document: true, onFocus: () => undefined }
+      ];
+
+      const enhancedChildNodes = [
+        getEnhancedElement(getNewEl({ attributes: [[CHILD_ATTR, 'el1']] })),
+        getEnhancedElement(getNewEl({ attributes: [[CHILD_ATTR, 'el2']] }))
+      ];
+
+      const result = getEnhancedEventHandlers(eventHandlers, enhancedChildNodes);
+
+      expect(result).toHaveLength(3);
+
+      expect(result).toEqual(
+        expect.arrayContaining([
+          eventHandlers[0],
+          expect.objectContaining({
+            id: 'el2',
+            enhancedEl: expect.objectContaining({ id: 'el2' })
+          }),
+          eventHandlers[2]
+        ])
+      );
     });
   });
 
