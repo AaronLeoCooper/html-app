@@ -1,6 +1,6 @@
 import { getByText, fireEvent } from 'dom-testing-library';
 
-import { EL_TARGET_ATTR, ROOT_ATTR } from './constants';
+import { CHILD_ATTR, ROOT_ATTR } from './constants';
 
 import { getNewEl } from './__mocks__/dom';
 import {
@@ -20,7 +20,7 @@ describe('events', () => {
   describe('getMatchingHandlers', () => {
     it('Should return all handlers that match the event target', () => {
       const rootNode = getNewEl({
-        content: `<div><button ${EL_TARGET_ATTR}="button1">Button</button></div>`
+        content: `<div><button ${CHILD_ATTR}="button1">Button</button></div>`
       });
 
       const e = {
@@ -43,7 +43,7 @@ describe('events', () => {
 
     it('Should return an empty array when no handlers match the event target', () => {
       const rootNode = getNewEl({
-        content: `<div><button ${EL_TARGET_ATTR}="button1">Button</button></div>`
+        content: `<div><button ${CHILD_ATTR}="button1">Button</button></div>`
       });
 
       const e = {
@@ -102,8 +102,8 @@ describe('events', () => {
         [ROOT_ATTR]
       ],
       content:
-        `<button ${EL_TARGET_ATTR}="button1">HA Button 1</button>` +
-        `<button ${EL_TARGET_ATTR}="button2">HA Button 2</button>` +
+        `<button ${CHILD_ATTR}="button1">HA Button 1</button>` +
+        `<button ${CHILD_ATTR}="button2">HA Button 2</button>` +
         '<button>Not HA Button</button>'
     });
 

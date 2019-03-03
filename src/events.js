@@ -1,4 +1,4 @@
-import  { EL_TARGET_ATTR } from './constants';
+import  { CHILD_ATTR } from './constants';
 import { getNormalisedEventName, getChildNode, isCamelcaseEventName } from './utils';
 
 /**
@@ -10,7 +10,7 @@ import { getNormalisedEventName, getChildNode, isCamelcaseEventName } from './ut
  */
 export function getMatchingHandlers(rootNode, e, handlers) {
   const targetNode = e.target;
-  const targetNodeName = targetNode.getAttribute(EL_TARGET_ATTR);
+  const targetNodeName = targetNode.getAttribute(CHILD_ATTR);
 
   return handlers.filter(({ id, root, ignoreChildren }) => {
     if (root) {

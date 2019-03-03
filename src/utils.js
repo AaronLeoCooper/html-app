@@ -1,19 +1,19 @@
-import { EL_TARGET_ATTR, LIB_NAME, ROOT_ATTR } from './constants';
+import { CHILD_ATTR, LIB_NAME, ROOT_ATTR } from './constants';
 
 /**
- * Log an arbitrary message to the console if opts.debug is `true`.
- * @param app {{opts: LibOptions}}
+ * Log an arbitrary message to the console if options.debug is `true`.
+ * @param options {LibOptions}
  * @param logMessageParts {*}
  */
-export function logDebug(app, ...logMessageParts) {
-  if (app.opts.debug) {
-    const suffix = app.opts.appName
-      ? ` ${app.opts.appName}`
+export function logDebug(options, ...logMessageParts) {
+  if (options.debug) {
+    const suffix = options.appName
+      ? ` ${options.appName}`
       : '';
 
     console.info(
       `%c[DEBUG ${LIB_NAME}${suffix}]:`,
-      'color: green; font-weight: bold;',
+      'color: blue; font-weight: bold;',
       ...logMessageParts
     );
   }
@@ -23,32 +23,45 @@ export function logDebug(app, ...logMessageParts) {
  * Returns an Error instance with a message prefixed by the lib name. Expects one or many
  * string parameters to be joined together in the error message by spaces.
  * @param errorMessageParts
+ * @constructor
  * @returns {Error}
  */
-function getAppError(...errorMessageParts) {
+export function AppError(...errorMessageParts) {
   return new Error(`${LIB_NAME} - ${errorMessageParts.join(' ')}`);
 }
 
 /**
  * Returns the root node for an app instance, based on the optionally passed appName value.
  * @param appName {string}
- * @returns {Element}
+ * @returns {Element|null}
  */
 export function getRootNode(appName = '') {
   const attr = `${ROOT_ATTR}="${appName}"`;
   const selector = `[${attr}]`;
 
-  const rootElement = document.querySelector(selector);
+  return document.querySelector(selector);
+}
 
-  if (!rootElement) {
-    throw getAppError(
-      'Unable to locate app root element with attribute:',
-      attr,
-      'Make sure an element is present in the HTML document with this attribute.'
-    );
-  }
+/**
+ * Returns an array of child elements within the root element that have the child attribute,
+ * or an empty array if there are no child elements.
+ * @param rootNode {Element}
+ * @returns {Element[]}
+ */
+export function getChildNodes(rootNode) {
+  const childrenNodeList = rootNode.querySelectorAll(`[${CHILD_ATTR}]`);
 
-  return rootElement;
+  return Array.prototype.slice.call(childrenNodeList);
+}
+
+/**
+ * Returns a specific child node by its name.
+ * @param rootNode {Element}
+ * @param childName {string}
+ * @returns {Element|null}
+ */
+export function getChildNode(rootNode, childName) {
+  return rootNode.querySelector(`[${CHILD_ATTR}="${childName}"]`);
 }
 
 /**
@@ -58,16 +71,6 @@ export function getRootNode(appName = '') {
  */
 export function getNormalisedEventName(event) {
   return event.toLowerCase().slice(2);
-}
-
-/**
- * Returns a specific child node by its name.
- * @param rootNode {Element}
- * @param childName {string}
- * @returns {Element | null}
- */
-export function getChildNode(rootNode, childName) {
-  return rootNode.querySelector(`[${EL_TARGET_ATTR}="${childName}"]`);
 }
 
 /**

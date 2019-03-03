@@ -11,7 +11,7 @@ export const LIB_NAME = 'HTMLApp';
 export const ROOT_ATTR = 'data-htmlapp';
 
 /**
- * The attribute name used to denote target elements with an app instance.
+ * The attribute name used to denote child elements with an app instance.
  * @type {string}
  */
-export const EL_TARGET_ATTR = 'data-ha';
+export const CHILD_ATTR = 'data-ha';

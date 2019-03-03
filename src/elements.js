@@ -1,4 +1,4 @@
-import { EL_TARGET_ATTR } from './constants';
+import { CHILD_ATTR } from './constants';
 
 /**
  * @typedef EnhancedElement - A wrapper object around a DOM element reference.
@@ -38,7 +38,7 @@ export function getEnhancedElement(el) {
 
   const wrapper = {
     el,
-    id: el.getAttribute(EL_TARGET_ATTR),
+    id: el.getAttribute(CHILD_ATTR),
 
     /**
      * Safely sets element text content.

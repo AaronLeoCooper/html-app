@@ -1,9 +1,10 @@
 import { getNewEl } from './__mocks__/dom';
-import { EL_TARGET_ATTR, LIB_NAME, ROOT_ATTR } from './constants';
+import { CHILD_ATTR, LIB_NAME, ROOT_ATTR } from './constants';
 
 import {
   logDebug,
   getRootNode,
+  getChildNodes,
   getNormalisedEventName,
   getChildNode,
   isCamelcaseEventName
@@ -15,26 +16,22 @@ describe('utils', () => {
       jest.clearAllMocks();
     });
 
-    it('Should not log a message to the console when opts.debug is false', () => {
+    it('Should not log a message to the console when options.debug is false', () => {
       jest.spyOn(console, 'info');
 
-      const app = {
-        opts: { debug: false }
-      };
+      const options = { debug: false };
 
-      logDebug(app, 'abc', 123);
+      logDebug(options, 'abc', 123);
 
       expect(console.info).toHaveBeenCalledTimes(0);
     });
 
-    it('Should log a prefixed message to the console when opts.debug is true', () => {
+    it('Should log a prefixed message to the console when options.debug is true', () => {
       jest.spyOn(console, 'info');
 
-      const app = {
-        opts: { debug: true }
-      };
+      const options = { debug: true };
 
-      logDebug(app, 'abc', 123);
+      logDebug(options, 'abc', 123);
 
       expect(console.info).toHaveBeenCalledTimes(1);
       expect(console.info.mock.calls[0][0]).toBe(`%c[DEBUG ${LIB_NAME}]:`);
@@ -45,11 +42,9 @@ describe('utils', () => {
     it('Should log a prefixed message with the appName to the console when opts.debug is true', () => {
       jest.spyOn(console, 'info');
 
-      const app = {
-        opts: { debug: true, appName: 'testApp' }
-      };
+      const options = { debug: true, appName: 'testApp' };
 
-      logDebug(app, 'abc', 123);
+      logDebug(options, 'abc', 123);
 
       expect(console.info).toHaveBeenCalledTimes(1);
       expect(console.info.mock.calls[0][0]).toBe(`%c[DEBUG ${LIB_NAME} testApp]:`);
@@ -62,8 +57,8 @@ describe('utils', () => {
     const div = getNewEl({ content: `<div ${ROOT_ATTR} id="test-htmlapp"></div>` });
 
     afterEach(() => {
-      if (document.querySelector('#test-htmlapp')) {
-        document.querySelector('#test-htmlapp').remove();
+      if (div) {
+        div.remove();
       }
     });
 
@@ -75,16 +70,43 @@ describe('utils', () => {
       expect(rootElement.id).toBe('test-htmlapp');
     });
 
-    it('Should throw an app error when there is no root element found', () => {
-      expect(() => getRootNode()).toThrowError();
+    it('Should return null when there is no root element found', () => {
+      const rootElement = getRootNode();
+
+      expect(rootElement).toBeNull();
     });
   });
 
-  describe('getNormalisedEventName', () => {
-    it('Should convert "onEventName" to "eventname"', () => {
-      const result = getNormalisedEventName('onEventName');
+  describe('getChildNodes', () => {
+    it('Should return an empty array when no child elements appear within the root node', () => {
+      const dom = getNewEl({
+        content: `<div ${ROOT_ATTR}><p></p></div><span ${CHILD_ATTR}></span>`
+      });
 
-      expect(result).toBe('eventname');
+      const rootNode = dom.querySelector(`[${ROOT_ATTR}]`);
+
+      const result = getChildNodes(rootNode);
+
+      expect(result).toEqual([]);
+    });
+
+    it('Should return an iterable array of child nodes when child elements appear within the root node', () => {
+      const dom = getNewEl({
+        content:
+          `<div ${ROOT_ATTR}>` +
+            `<span ${CHILD_ATTR}="child1"></span>` +
+            '<p></p>' +
+            `<span ${CHILD_ATTR}="child2"></span>` +
+          '</div>'
+      });
+
+      const rootNode = dom.querySelector(`[${ROOT_ATTR}]`);
+      const child1 = dom.querySelector(`[${CHILD_ATTR}="child1"]`);
+      const child2 = dom.querySelector(`[${CHILD_ATTR}="child2"]`);
+
+      const result = getChildNodes(rootNode);
+
+      expect(result).toEqual([child1, child2]);
     });
   });
 
@@ -99,13 +121,21 @@ describe('utils', () => {
 
     it('Should return null when the child element is not within the rootNode', () => {
       const rootNode = getNewEl({
-        content: `<div><div ${EL_TARGET_ATTR}="test-child" id="test-child-node"></div></div>`
+        content: `<div><div ${CHILD_ATTR}="test-child" id="test-child-node"></div></div>`
       });
 
       const result = getChildNode(rootNode, 'test-child');
 
       expect(result).toBeInstanceOf(Node);
       expect(result.id).toBe('test-child-node');
+    });
+  });
+
+  describe('getNormalisedEventName', () => {
+    it('Should convert "onEventName" to "eventname"', () => {
+      const result = getNormalisedEventName('onEventName');
+
+      expect(result).toBe('eventname');
     });
   });
 

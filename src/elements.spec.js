@@ -1,5 +1,5 @@
 import { getNewEl } from './__mocks__/dom';
-import { EL_TARGET_ATTR } from './constants';
+import { CHILD_ATTR } from './constants';
 
 import { getEnhancedElement } from './elements';
 
@@ -41,7 +41,7 @@ describe('elements', () => {
     it('Should return an object with the element target attribute as an "id" property', () => {
       const el = createEl({
         attributes: [
-          [EL_TARGET_ATTR, 'button1']
+          [CHILD_ATTR, 'button1']
         ]
       });
 

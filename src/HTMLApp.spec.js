@@ -1,5 +1,5 @@
 import { getNewEl, dispatchEvent } from './__mocks__/dom';
-import { EL_TARGET_ATTR, ROOT_ATTR } from './constants';
+import { CHILD_ATTR, ROOT_ATTR } from './constants';
 
 import { bindEventHandlers } from './events';
 
@@ -8,7 +8,7 @@ import HTMLApp from './HTMLApp';
 jest.mock('./events');
 
 describe('HTMLApp', () => {
-  describe('Root node not in the DOM', () => {
+  describe('No root node in the DOM', () => {
     it('Should throw an error when no root element is in the DOM when initialised', () => {
       expect(() => new HTMLApp()).toThrowError();
     });
@@ -63,9 +63,9 @@ describe('HTMLApp', () => {
 
       it('Should call onLoadApp with all child nodes when the window is loaded', () => {
         rootNode.innerHTML =
-          `<button ${EL_TARGET_ATTR}="button1"></button>` +
+          `<button ${CHILD_ATTR}="button1"></button>` +
           '<button></button>' +
-          `<button ${EL_TARGET_ATTR}="button2"></button>`;
+          `<button ${CHILD_ATTR}="button2"></button>`;
 
         const onLoadApp = jest.fn();
 
