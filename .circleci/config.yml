@@ -57,15 +57,10 @@ jobs:
 
 workflows:
   version: 2
-  untagged-build:
-    jobs:
-      - build
-  deployment:
+  build-deployment:
     jobs:
       - build:
           filters:
-            branches:
-              only: master
             tags:
               only: /.*/
       - deploy:
