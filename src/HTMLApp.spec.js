@@ -58,9 +58,17 @@ describe('HTMLApp', () => {
         dispatchEvent(window, 'load');
 
         expect(onLoadApp).toHaveBeenCalledTimes(1);
-        expect(onLoadApp).toHaveBeenCalledWith(
-          expect.objectContaining({ el: rootNode }),
-          []
+
+        expect(onLoadApp.mock.calls[0][0]).toEqual(
+          expect.objectContaining({ el: rootNode })
+        );
+
+        expect(onLoadApp.mock.calls[0][1]).toEqual([]);
+
+        expect(onLoadApp.mock.calls[0][2]).toEqual(
+          expect.objectContaining({
+            __enhancedRootNode: expect.objectContaining({ el: rootNode })
+          })
         );
       });
 
@@ -77,12 +85,22 @@ describe('HTMLApp', () => {
         dispatchEvent(window, 'load');
 
         expect(onLoadApp).toHaveBeenCalledTimes(1);
-        expect(onLoadApp).toHaveBeenCalledWith(
-          expect.objectContaining({ el: rootNode }),
+
+        expect(onLoadApp.mock.calls[0][0]).toEqual(
+          expect.objectContaining({ el: rootNode })
+        );
+
+        expect(onLoadApp.mock.calls[0][1]).toEqual(
           expect.arrayContaining([
             expect.objectContaining({ id: 'button1' }),
             expect.objectContaining({ id: 'button2' })
           ])
+        );
+
+        expect(onLoadApp.mock.calls[0][2]).toEqual(
+          expect.objectContaining({
+            __enhancedRootNode: expect.objectContaining({ el: rootNode })
+          })
         );
       });
     });
@@ -155,6 +173,53 @@ describe('HTMLApp', () => {
 
         expect(bindEventHandlers.mock.calls[0][1][0].enhancedEl.el).toEqual(button1);
         expect(bindEventHandlers.mock.calls[0][1][1].enhancedEl.el).toEqual(button2);
+      });
+    });
+
+    describe('getEl', () => {
+      it('Should return the matching enhanced child', () => {
+        rootNode.innerHTML =
+          `<button ${CHILD_ATTR}="button1"></button>` +
+          `<button ${CHILD_ATTR}="button2"></button>`;
+
+        const button1 = rootNode.querySelector(`[${CHILD_ATTR}="button1"]`);
+
+        const instance = new HTMLApp();
+
+        const result = instance.getEl('button1');
+
+        expect(result).toEqual(
+          expect.objectContaining({
+            id: 'button1',
+            el: button1
+          })
+        );
+      });
+
+      it('Should return undefined when no matching enhanced child node is found', () => {
+        rootNode.innerHTML =
+          `<button ${CHILD_ATTR}="button1"></button>` +
+          `<button ${CHILD_ATTR}="button2"></button>`;
+
+        const instance = new HTMLApp();
+
+        const result = instance.getEl('button5');
+
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe('getRootEl', () => {
+      it('Should return the enhanced root node', () => {
+        const instance = new HTMLApp();
+
+        const result = instance.getRootEl();
+
+        expect(result).toEqual(
+          expect.objectContaining({
+            el: rootNode
+          })
+        );
       });
     });
   });

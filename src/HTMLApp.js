@@ -60,6 +60,24 @@ function HTMLApp(options) {
 }
 
 /**
+ * Returns the matching enhanced child node for the passed child node name, or undefined if
+ * the child doesn't exist within the root node tree.
+ * @param childNodeName {string}
+ * @returns {(EnhancedElement|undefined)}
+ */
+HTMLApp.prototype.getEl = function getEl(childNodeName) {
+  return this.__enhancedChildNodes.find(({ id }) => id === childNodeName);
+};
+
+/**
+ * Returns the enhanced root node for the app instance.
+ * @returns {EnhancedElement}
+ */
+HTMLApp.prototype.getRootEl = function getRootEl() {
+  return this.__enhancedRootNode;
+};
+
+/**
  * Side-effects triggered when the app initialises.
  */
 function handleLoadApp() {
@@ -67,17 +85,14 @@ function handleLoadApp() {
 
   logDebug(this.__opts, 'loading app');
 
-  const enhancedEventHandlers = getEnhancedEventHandlers(
-    eventHandlers,
-    this.__enhancedChildNodes
-  );
+  const enhancedEventHandlers = getEnhancedEventHandlers(eventHandlers, this.__enhancedChildNodes);
 
   if (enhancedEventHandlers.length > 0) {
-    bindEventHandlers(this.__enhancedRootNode, enhancedEventHandlers);
+    bindEventHandlers(this.__enhancedRootNode, enhancedEventHandlers, this);
   }
 
   if (onLoadApp) {
-    onLoadApp(this.__enhancedRootNode, this.__enhancedChildNodes);
+    onLoadApp(this.__enhancedRootNode, this.__enhancedChildNodes, this);
   }
 }
 

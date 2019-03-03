@@ -1,5 +1,6 @@
 import { getNewEl } from './__mocks__/dom';
 import { CHILD_ATTR, LIB_NAME, ROOT_ATTR } from './constants';
+import { getEnhancedElement } from './elements';
 
 import {
   logDebug,
@@ -11,7 +12,6 @@ import {
   getNormalisedEventName,
   isCamelcaseEventName
 } from './utils';
-import { getEnhancedElement } from './elements';
 
 describe('utils', () => {
   describe('logDebug', () => {

@@ -33,13 +33,13 @@ new HTMLApp({
   eventHandlers: [
     {
       id: 'userName',
-      onChange: function(e, el) {
+      onChange: function(e, el, app) {
         if (!e.target.value) {
-          this.getEl('userNameError').setText('This field is required!');
+          app.getEl('userNameError').setText('This field is required!');
   
           el.addClass('has-error');
         } else {
-          this.getEl('userNameError').setText('');
+          app.getEl('userNameError').setText('');
   
           el.removeClass('has-error');
         }

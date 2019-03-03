@@ -84,8 +84,9 @@ export function getGroupedEventHandlers(eventHandlers) {
  * Binds multiple event handlers based on their event types.
  * @param enhancedRootNode {EnhancedElement}
  * @param eventHandlers {EventHandler[]}
+ * @param appInstance {Object} - The main app instance object
  */
-export function bindEventHandlers(enhancedRootNode, eventHandlers) {
+export function bindEventHandlers(enhancedRootNode, eventHandlers, appInstance) {
   const groupedEventHandlers = getGroupedEventHandlers(eventHandlers);
 
   groupedEventHandlers.forEach(({ eventType, handlers }) => {
@@ -98,7 +99,7 @@ export function bindEventHandlers(enhancedRootNode, eventHandlers) {
             ? enhancedRootNode
             : enhancedEl;
 
-          callback(e, callbackEnhancedEl);
+          callback(e, callbackEnhancedEl, appInstance);
         });
     });
 
@@ -107,7 +108,7 @@ export function bindEventHandlers(enhancedRootNode, eventHandlers) {
     if (documentHandlers.length > 0) {
       document.addEventListener(eventType, (e) => {
         documentHandlers.forEach(({ callback }) => {
-          callback(e);
+          callback(e, appInstance);
         });
       });
     }
