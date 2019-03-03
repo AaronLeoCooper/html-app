@@ -42,15 +42,18 @@ function HTMLApp(options) {
     ...options
   };
 
-  this.__rootNode = getRootNode(this.__opts.appName);
+  const rootNode = getRootNode(this.__opts.appName);
 
-  if (!this.__rootNode) {
+  if (!rootNode) {
     throw new AppError(
       'Unable to locate the app root element with attribute:',
       `${ROOT_ATTR}="${this.__opts.appName}".`,
       'Make sure an element is present in the document with this attribute.'
     );
   }
+
+  this.__enhancedRootNode = getEnhancedElement(rootNode);
+  this.__enhancedChildNodes = getEnhancedChildNodes(this.__enhancedRootNode);
 
   window.addEventListener('load', handleLoadApp.bind(this));
   window.addEventListener('beforeunload', handleUnloadApp.bind(this));
@@ -64,14 +67,17 @@ function handleLoadApp() {
 
   logDebug(this.__opts, 'loading app');
 
-  if (eventHandlers.length > 0) {
-    bindEventHandlers(this.__rootNode, eventHandlers);
+  const enhancedEventHandlers = getEnhancedEventHandlers(
+    eventHandlers,
+    this.__enhancedChildNodes
+  );
+
+  if (enhancedEventHandlers.length > 0) {
+    bindEventHandlers(this.__enhancedRootNode, enhancedEventHandlers);
   }
 
   if (onLoadApp) {
-    const childNodes = getEnhancedChildNodes(this.__rootNode);
-
-    onLoadApp(childNodes);
+    onLoadApp(this.__enhancedChildNodes);
   }
 }
 
@@ -91,10 +97,11 @@ function handleUnloadApp() {
 /**
  * Returns all nodes within the root element that have the element target attribute.
  * Nodes are enhanced with wrapper properties/methods.
+ * @param enhancedRootNode {EnhancedElement}
  * @returns {EnhancedElement[]}
  */
-function getEnhancedChildNodes(rootNode) {
-  const childNodes = getChildNodes(rootNode);
+function getEnhancedChildNodes(enhancedRootNode) {
+  const childNodes = getChildNodes(enhancedRootNode.el);
 
   if (childNodes.length === 0) {
     /**
@@ -102,7 +109,38 @@ function getEnhancedChildNodes(rootNode) {
      */
   }
 
+  /**
+   * TODO: Add warning for duplicate child node ids
+   */
+
   return childNodes.map(getEnhancedElement);
+}
+
+/**
+ * Returns an array of event handlers with ids replaced with their respective
+ * enhanced child node. Event handlers with ids that don't match a child node
+ * will be filtered out. Root and Document event handlers are returned unmodified.
+ * @param eventHandlers {EventHandler[]}
+ * @param enhancedChildNodes {EnhancedElement[]}
+ * @returns {{enhancedEl: EnhancedElement}[]}
+ */
+function getEnhancedEventHandlers(eventHandlers, enhancedChildNodes) {
+  return eventHandlers
+    .filter((eventHandler) =>
+      enhancedChildNodes.some(({ id }) => id === eventHandler.id) ||
+      eventHandler.root ||
+      eventHandler.document
+    )
+    .map((eventHandler) => {
+      if (eventHandler.document || eventHandler.root) {
+        return eventHandler;
+      }
+
+      return {
+        ...eventHandler,
+        enhancedEl: enhancedChildNodes.find(({ id }) => id === eventHandler.id)
+      };
+    });
 }
 
 export default HTMLApp;

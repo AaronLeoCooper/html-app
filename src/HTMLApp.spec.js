@@ -115,10 +115,30 @@ describe('HTMLApp', () => {
         expect(bindEventHandlers).toHaveBeenCalledTimes(0);
       });
 
-      it('Should call bindEventHandlers when eventHandlers are provided', () => {
+      it('Should not call bindEventHandlers when no eventHandlers have matching child nodes', () => {
+        new HTMLApp({
+          eventHandlers: [
+            { id: 'unknownNode1', onClick: () => undefined },
+            { id: 'unknownNode2', onClick: () => undefined }
+          ]
+        });
+
+        dispatchEvent(window, 'load');
+
+        expect(bindEventHandlers).toHaveBeenCalledTimes(0);
+      });
+
+      it('Should call bindEventHandlers with enhanced rootNode and event handlers', () => {
+        rootNode.innerHTML =
+          `<button ${CHILD_ATTR}="button1"></button>` +
+          `<button ${CHILD_ATTR}="button2"></button>`;
+
+        const button1 = rootNode.querySelector(`[${CHILD_ATTR}="button1"]`);
+        const button2 = rootNode.querySelector(`[${CHILD_ATTR}="button2"]`);
+
         const eventHandlers = [
-          { id: 'node1', onClick: () => undefined },
-          { id: 'node2', onClick: () => undefined }
+          { id: 'button1', onClick: () => undefined },
+          { id: 'button2', onClick: () => undefined }
         ];
 
         new HTMLApp({ eventHandlers });
@@ -126,7 +146,11 @@ describe('HTMLApp', () => {
         dispatchEvent(window, 'load');
 
         expect(bindEventHandlers).toHaveBeenCalledTimes(1);
-        expect(bindEventHandlers).toHaveBeenCalledWith(rootNode, eventHandlers);
+
+        expect(bindEventHandlers.mock.calls[0][0].el).toEqual(rootNode);
+
+        expect(bindEventHandlers.mock.calls[0][1][0].enhancedEl.el).toEqual(button1);
+        expect(bindEventHandlers.mock.calls[0][1][1].enhancedEl.el).toEqual(button2);
       });
     });
   });
