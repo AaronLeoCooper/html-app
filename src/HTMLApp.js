@@ -1,4 +1,4 @@
-import { AppError, logDebug, getRootNode, getChildNodes } from './utils';
+import { AppError, getEnhancedChildNodes, getEnhancedEventHandlers, getRootNode, logDebug } from './utils';
 import { bindEventHandlers } from './events';
 import { getEnhancedElement } from './elements';
 import { ROOT_ATTR } from './constants';
@@ -77,7 +77,7 @@ function handleLoadApp() {
   }
 
   if (onLoadApp) {
-    onLoadApp(this.__enhancedChildNodes);
+    onLoadApp(this.__enhancedRootNode, this.__enhancedChildNodes);
   }
 }
 
@@ -92,55 +92,6 @@ function handleUnloadApp() {
   if (onUnloadApp) {
     onUnloadApp();
   }
-}
-
-/**
- * Returns all nodes within the root element that have the element target attribute.
- * Nodes are enhanced with wrapper properties/methods.
- * @param enhancedRootNode {EnhancedElement}
- * @returns {EnhancedElement[]}
- */
-function getEnhancedChildNodes(enhancedRootNode) {
-  const childNodes = getChildNodes(enhancedRootNode.el);
-
-  if (childNodes.length === 0) {
-    /**
-     * TODO: Add warning for no child nodes being found
-     */
-  }
-
-  /**
-   * TODO: Add warning for duplicate child node ids
-   */
-
-  return childNodes.map(getEnhancedElement);
-}
-
-/**
- * Returns an array of event handlers with ids replaced with their respective
- * enhanced child node. Event handlers with ids that don't match a child node
- * will be filtered out. Root and Document event handlers are returned unmodified.
- * @param eventHandlers {EventHandler[]}
- * @param enhancedChildNodes {EnhancedElement[]}
- * @returns {{enhancedEl: EnhancedElement}[]}
- */
-function getEnhancedEventHandlers(eventHandlers, enhancedChildNodes) {
-  return eventHandlers
-    .filter((eventHandler) =>
-      enhancedChildNodes.some(({ id }) => id === eventHandler.id) ||
-      eventHandler.root ||
-      eventHandler.document
-    )
-    .map((eventHandler) => {
-      if (eventHandler.document || eventHandler.root) {
-        return eventHandler;
-      }
-
-      return {
-        ...eventHandler,
-        enhancedEl: enhancedChildNodes.find(({ id }) => id === eventHandler.id)
-      };
-    });
 }
 
 export default HTMLApp;

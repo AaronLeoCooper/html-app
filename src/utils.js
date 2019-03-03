@@ -1,4 +1,5 @@
 import { CHILD_ATTR, LIB_NAME, ROOT_ATTR } from './constants';
+import { getEnhancedElement } from './elements';
 
 /**
  * Log an arbitrary message to the console if options.debug is `true`.
@@ -55,6 +56,28 @@ export function getChildNodes(rootNode) {
 }
 
 /**
+ * Returns all nodes within the root element that have the element target attribute.
+ * Nodes are enhanced with wrapper properties/methods.
+ * @param enhancedRootNode {EnhancedElement}
+ * @returns {EnhancedElement[]}
+ */
+export function getEnhancedChildNodes(enhancedRootNode) {
+  const childNodes = getChildNodes(enhancedRootNode.el);
+
+  if (childNodes.length === 0) {
+    /**
+     * TODO: Add warning for no child nodes being found
+     */
+  }
+
+  /**
+   * TODO: Add warning for duplicate child node ids
+   */
+
+  return childNodes.map(getEnhancedElement);
+}
+
+/**
  * Returns a specific child node by its name.
  * @param rootNode {Element}
  * @param childName {string}
@@ -62,6 +85,33 @@ export function getChildNodes(rootNode) {
  */
 export function getChildNode(rootNode, childName) {
   return rootNode.querySelector(`[${CHILD_ATTR}="${childName}"]`);
+}
+
+/**
+ * Returns an array of event handlers with ids replaced with their respective
+ * enhanced child node. Event handlers with ids that don't match a child node
+ * will be filtered out. Root and Document event handlers are returned unmodified.
+ * @param eventHandlers {EventHandler[]}
+ * @param enhancedChildNodes {EnhancedElement[]}
+ * @returns {{enhancedEl: EnhancedElement}[]}
+ */
+export function getEnhancedEventHandlers(eventHandlers, enhancedChildNodes) {
+  return eventHandlers
+    .filter((eventHandler) =>
+      enhancedChildNodes.some(({ id }) => id === eventHandler.id) ||
+      eventHandler.root ||
+      eventHandler.document
+    )
+    .map((eventHandler) => {
+      if (eventHandler.document || eventHandler.root) {
+        return eventHandler;
+      }
+
+      return {
+        ...eventHandler,
+        enhancedEl: enhancedChildNodes.find(({ id }) => id === eventHandler.id)
+      };
+    });
 }
 
 /**

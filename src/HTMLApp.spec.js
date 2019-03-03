@@ -58,7 +58,10 @@ describe('HTMLApp', () => {
         dispatchEvent(window, 'load');
 
         expect(onLoadApp).toHaveBeenCalledTimes(1);
-        expect(onLoadApp).toHaveBeenCalledWith([]);
+        expect(onLoadApp).toHaveBeenCalledWith(
+          expect.objectContaining({ el: rootNode }),
+          []
+        );
       });
 
       it('Should call onLoadApp with all child nodes when the window is loaded', () => {
@@ -75,6 +78,7 @@ describe('HTMLApp', () => {
 
         expect(onLoadApp).toHaveBeenCalledTimes(1);
         expect(onLoadApp).toHaveBeenCalledWith(
+          expect.objectContaining({ el: rootNode }),
           expect.arrayContaining([
             expect.objectContaining({ id: 'button1' }),
             expect.objectContaining({ id: 'button2' })
