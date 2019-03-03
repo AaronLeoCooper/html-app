@@ -6,7 +6,7 @@ import { CHILD_ATTR } from './constants';
  * @property id {string} - The unique target attribute value for the Element.
  * @property setText {Function}
  * @property setInnerHtml {Function}
- * @property setClass {Function}
+ * @property addClass {Function}
  * @property removeClass {Function}
  * @property setAttribute {Function}
  * @property removeAttribute {Function}
@@ -63,7 +63,7 @@ export function getEnhancedElement(el) {
      * @param {...string} classes
      * @returns {EnhancedElement}
      */
-    setClass: withWrapper((...classes) => {
+    addClass: withWrapper((...classes) => {
       el.classList.add(...classes.filter(Boolean));
     }),
 

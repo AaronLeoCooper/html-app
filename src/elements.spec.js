@@ -100,11 +100,11 @@ describe('elements', () => {
       });
     });
 
-    describe('setClass', () => {
+    describe('addClass', () => {
       it('Should add a new class to the element', () => {
         const wrapper = getEnhancedElement(createEl());
 
-        const result = wrapper.setClass('test-class-1');
+        const result = wrapper.addClass('test-class-1');
 
         expect(result.el).toHaveClass('test-class-1');
         expect(wrapper.el).toHaveClass('test-class-1');
@@ -114,7 +114,7 @@ describe('elements', () => {
       it('Should add multiple new classes to the element', () => {
         const wrapper = getEnhancedElement(createEl());
 
-        const result = wrapper.setClass('test-class-1', 'test-class-2');
+        const result = wrapper.addClass('test-class-1', 'test-class-2');
 
         expect(result.el).toHaveClass('test-class-1');
         expect(result.el).toHaveClass('test-class-2');
@@ -124,16 +124,16 @@ describe('elements', () => {
       it('Should not throw when invalid values are passed', () => {
         const wrapper = getEnhancedElement(createEl());
 
-        expect(() => wrapper.setClass('', false, 0, NaN, Infinity, null, undefined)).not.toThrow();
+        expect(() => wrapper.addClass('', false, 0, NaN, Infinity, null, undefined)).not.toThrow();
       });
 
-      it('Should support chaining multiple setClass calls', () => {
+      it('Should support chaining multiple addClass calls', () => {
         const wrapper = getEnhancedElement(createEl());
 
         const result = wrapper
-          .setClass('test-class-1')
-          .setClass('test-class-2')
-          .setClass('test-class-3');
+          .addClass('test-class-1')
+          .addClass('test-class-2')
+          .addClass('test-class-3');
 
         expect(result.el).toHaveClass('test-class-1');
         expect(result.el).toHaveClass('test-class-2');
@@ -291,7 +291,7 @@ describe('elements', () => {
 
         wrapper
           .setText('abc')
-          .setClass('test-class-1')
+          .addClass('test-class-1')
           .setInnerHtml('<span id="test-span"></span>')
           .setStyle('fontStyle', 'italic')
           .setAttribute('data-test-1', 'Text value 1')
@@ -299,7 +299,7 @@ describe('elements', () => {
           .setAttribute('data-test-2', 'Text value 2')
           .removeClass('test-class-1')
           .removeAttribute('data-test-2')
-          .setClass('test-class-2');
+          .addClass('test-class-2');
 
         const el = findElInDom();
 
@@ -372,11 +372,11 @@ describe('elements', () => {
         expect(wrapper.getClasses()).toEqual([]);
       });
 
-      it('Should return an array of classes after setClass', () => {
+      it('Should return an array of classes after addClass', () => {
         const wrapper = getEnhancedElement(createEl());
 
         const result = wrapper
-          .setClass('test-class-1', 'test-class-2')
+          .addClass('test-class-1', 'test-class-2')
           .getClasses();
 
         expect(result).toEqual(['test-class-1', 'test-class-2']);

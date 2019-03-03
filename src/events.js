@@ -92,9 +92,14 @@ export function bindEventHandlers(enhancedRootNode, eventHandlers) {
     const nonDocumentHandlers = handlers.filter((handler) => !handler.document);
 
     enhancedRootNode.el.addEventListener(eventType, (e) => {
-      getMatchingHandlers(e, nonDocumentHandlers, enhancedRootNode).forEach(({ callback }) => {
-        callback(e);
-      });
+      getMatchingHandlers(e, nonDocumentHandlers, enhancedRootNode)
+        .forEach(({ callback, root, enhancedEl }) => {
+          const callbackEnhancedEl = root
+            ? enhancedRootNode
+            : enhancedEl;
+
+          callback(e, callbackEnhancedEl);
+        });
     });
 
     const documentHandlers = handlers.filter((handler) => handler.document);
