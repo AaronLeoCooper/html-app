@@ -28,18 +28,29 @@ function onLoadApp(childNodes) {
     });
 }
 
-function onSubmit(e) {
+function onSubmit(e, el) {
   e.preventDefault();
 
-  Object.keys(formState).forEach((key) => {
-    const fieldWrapper = document.querySelector(`[data-ha="${key}Field"]`);
+  let formHasErrors = false;
 
-    if (!formState[key]) {
-      fieldWrapper.classList.add('required');
-    } else {
-      fieldWrapper.classList.remove('required');
-    }
-  });
+  Object.keys(formState)
+    .forEach((key) => {
+      const fieldWrapper = document.querySelector(`[data-ha="${key}Field"]`);
+
+      if (!formState[key]) {
+        fieldWrapper.classList.add('required');
+
+        formHasErrors = true;
+      } else {
+        fieldWrapper.classList.remove('required');
+      }
+    });
+
+  if (formHasErrors) {
+    el.addClass('has-errors');
+  } else {
+    el.removeClass('has-errors');
+  }
 }
 
 new HTMLApp({

@@ -37,7 +37,7 @@ new HTMLApp({
         if (!e.target.value) {
           this.getEl('userNameError').setText('This field is required!');
   
-          el.setClass('has-error');
+          el.addClass('has-error');
         } else {
           this.getEl('userNameError').setText('');
   

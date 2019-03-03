@@ -1,4 +1,4 @@
-import { EL_TARGET_ATTR } from './constants';
+import { CHILD_ATTR } from './constants';
 
 /**
  * @typedef EnhancedElement - A wrapper object around a DOM element reference.
@@ -6,7 +6,7 @@ import { EL_TARGET_ATTR } from './constants';
  * @property id {string} - The unique target attribute value for the Element.
  * @property setText {Function}
  * @property setInnerHtml {Function}
- * @property setClass {Function}
+ * @property addClass {Function}
  * @property removeClass {Function}
  * @property setAttribute {Function}
  * @property removeAttribute {Function}
@@ -38,7 +38,7 @@ export function getEnhancedElement(el) {
 
   const wrapper = {
     el,
-    id: el.getAttribute(EL_TARGET_ATTR),
+    id: el.getAttribute(CHILD_ATTR),
 
     /**
      * Safely sets element text content.
@@ -63,7 +63,7 @@ export function getEnhancedElement(el) {
      * @param {...string} classes
      * @returns {EnhancedElement}
      */
-    setClass: withWrapper((...classes) => {
+    addClass: withWrapper((...classes) => {
       el.classList.add(...classes.filter(Boolean));
     }),
 
