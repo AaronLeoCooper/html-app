@@ -45,14 +45,22 @@ jobs:
 
 workflows:
   version: 2
-  deployment:
+  untagged-build:
     jobs:
       - build
+  deployment:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master
+            tags:
+              only: /.*/
       - deploy:
           requires:
             - build
           filters:
+            branches:
+              only: master
             tags:
               only: /^v.*/
-            branches:
-              only: /^master$/
