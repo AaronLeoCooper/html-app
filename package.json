@@ -1,6 +1,6 @@
 {
   "name": "html-app",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A simple JavaScript library for enhancing HTML pages",
   "main": "dist/html-app.es.js",
   "bugs": {
