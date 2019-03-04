@@ -2,7 +2,11 @@
 
 # HTMLApp
 
-![npm bundle size](https://img.shields.io/bundlephobia/minzip/html-app.svg?style=flat-square) ![NPM](https://img.shields.io/npm/l/html-app.svg?style=flat-square) ![David](https://img.shields.io/david/AaronLeoCooper/html-app.svg?style=flat-square) ![CircleCI branch](https://img.shields.io/circleci/project/github/AaronLeoCooper/html-app/master.svg?style=flat-square)
+[![npm](https://img.shields.io/npm/v/html-app.svg?style=flat-square)](https://www.npmjs.com/package/html-app)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/html-app.svg?style=flat-square)](https://bundlephobia.com/result?p=html-app)
+[![David](https://img.shields.io/david/AaronLeoCooper/html-app.svg?style=flat-square)](https://david-dm.org/aaronleocooper/html-app)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/AaronLeoCooper/html-app/master.svg?style=flat-square)](https://circleci.com/gh/AaronLeoCooper/html-app/tree/master)
+[![NPM](https://img.shields.io/npm/l/html-app.svg?style=flat-square)](https://www.npmjs.com/package/html-app)
 
 Need just a sprinkling of JS to enhance your HTML pages? ✨
 
