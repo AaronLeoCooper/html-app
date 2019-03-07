@@ -1,0 +1,15 @@
+{
+  "name": "html-app-advanced-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "parcel index.html"
+  },
+  "devDependencies": {
+    "@babel/core": "7.3.4",
+    "html-app": "*",
+    "parcel-bundler": "1.11.0"
+  }
+}
